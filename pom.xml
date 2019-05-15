@@ -22,8 +22,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <intact.search.interactions.version>0.0.1-ANJALI-SNAPSHOT</intact.search.interactions.version>
-        <intact.search.interactor.version>0.0.1-NOE-SNAPSHOT</intact.search.interactor.version>
+        <intact.search.interactions.version>0.0.2-GRAPH-SNAPSHOT</intact.search.interactions.version>
+        <intact.search.interactor.version>0.0.2-GRAPH-SNAPSHOT</intact.search.interactor.version>
     </properties>
 
     <scm>
