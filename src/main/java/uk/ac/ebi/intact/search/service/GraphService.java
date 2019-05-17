@@ -112,6 +112,7 @@ public class GraphService {
                     graphNode.setId(searchInteraction.getInteractorAAc());
                     graphNode.setSpeciesName(searchInteraction.getSpeciesA());
                     graphNode.setTaxId(searchInteraction.getTaxIdA());
+                    graphNode.setInteractorId(searchInteraction.getIdA());
                     graphNode.setColor("rgb(255,0,0)");
                     graphNodes.add(graphNode);
                     interactorSet.add(searchInteraction.getInteractorAAc());
@@ -122,6 +123,7 @@ public class GraphService {
                     graphNode.setId(searchInteraction.getInteractorBAc());
                     graphNode.setSpeciesName(searchInteraction.getSpeciesB());
                     graphNode.setTaxId(searchInteraction.getTaxIdB());
+                    graphNode.setInteractorId(searchInteraction.getIdB());
                     graphNode.setColor("rgb(255,0,0)");
                     graphNodes.add(graphNode);
                     interactorSet.add(searchInteraction.getInteractorBAc());

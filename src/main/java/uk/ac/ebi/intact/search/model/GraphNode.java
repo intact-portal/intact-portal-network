@@ -19,6 +19,9 @@ public class GraphNode {
     @JsonProperty("color")
     private String color;
 
+    @JsonProperty("label")
+    private String interactorId;
+
 
     public String getId() {
         return id;
@@ -50,5 +53,13 @@ public class GraphNode {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public String getInteractorId() {
+        return interactorId;
+    }
+
+    public void setInteractorId(String interactorId) {
+        this.interactorId = interactorId;
     }
 }
