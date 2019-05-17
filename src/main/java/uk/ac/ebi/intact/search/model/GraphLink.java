@@ -13,6 +13,9 @@ public class GraphLink {
     @JsonProperty("target")
     private String target;
 
+    @JsonProperty("id")
+    private String interactionAc;
+
 
     public String getSource() {
         return source;
@@ -28,5 +31,14 @@ public class GraphLink {
 
     public void setTarget(String target) {
         this.target = target;
+    }
+
+
+    public String getInteractionAc() {
+        return interactionAc;
+    }
+
+    public void setInteractionAc(String interactionAc) {
+        this.interactionAc = interactionAc;
     }
 }

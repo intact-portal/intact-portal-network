@@ -1,5 +1,7 @@
 package uk.ac.ebi.intact.search.service;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import uk.ac.ebi.intact.search.model.GraphLink;
 import uk.ac.ebi.intact.search.model.GraphNode;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,6 +26,7 @@ public class GraphService {
 
     private InteractionSearchService interactionSearchService;
     private InteractorSearchService interactorSearchService;
+    private static final Log log = LogFactory.getLog(GraphService.class);
 
     @Autowired
     public GraphService(InteractionSearchService interactionSearchService,
@@ -45,15 +49,17 @@ public class GraphService {
              int page,
              int pageSize) {
 
-        Page<SearchInteractor> interactors = this.interactorSearchService.findInteractorForGraphJson(query, speciesFilter, interactorTypeFilter,
+        /*Page<SearchInteractor> interactors = this.interactorSearchService.findInteractorForGraphJson(query, speciesFilter, interactorTypeFilter,
                 detectionMethodFilter, interactionTypeFilter, interactionHostOrganism,
-                isNegativeFilter, minMiScore, maxMiScore, page, pageSize);
+                isNegativeFilter, minMiScore, maxMiScore, page, pageSize);*/
 
         Page<SearchInteraction> interactions = this.interactionSearchService.findInteractionForGraphJson(query, detectionMethodFilter,
                 interactionTypeFilter, interactionHostOrganism, isNegativeFilter, minMiScore, maxMiScore, speciesFilter, interSpecies,
                 page, pageSize);
 
-        return toD3Format(interactors.getContent(), interactions.getContent());
+        // return toD3FormatAlternative(interactors.getContent(), interactions.getContent());
+
+        return toD3FormatAlternative(interactions.getContent());
     }
 
     private GraphJson toD3Format(List<SearchInteractor> interactors, List<SearchInteraction> interactions) {
@@ -76,6 +82,60 @@ public class GraphService {
             graphLink.setTarget(searchInteraction.getInteractorBAc());
             graphLinks.add(graphLink);
         }
+
+        graphJson.setInteractions(graphLinks);
+        graphJson.setInteractors(graphNodes);
+
+        return graphJson;
+    }
+
+    /*
+    * Delete this code when not needed
+    *
+    * */
+    private GraphJson toD3FormatAlternative(List<SearchInteraction> interactions) {
+        GraphJson graphJson = new GraphJson();
+        List<GraphNode> graphNodes = new ArrayList<>();
+        List<GraphLink> graphLinks = new ArrayList<>();
+        HashSet<String> interactorSet = new HashSet<>();
+
+
+        for (SearchInteraction searchInteraction : interactions) {
+            try {
+                GraphLink graphLink = new GraphLink();
+                graphLink.setSource(searchInteraction.getInteractorAAc());
+                graphLink.setTarget(searchInteraction.getInteractorBAc());
+                graphLink.setInteractionAc(searchInteraction.getInteractionAc());
+
+                if (!interactorSet.contains(searchInteraction.getInteractorAAc())) {
+                    GraphNode graphNode = new GraphNode();
+                    graphNode.setId(searchInteraction.getInteractorAAc());
+                    graphNode.setSpeciesName(searchInteraction.getSpeciesA());
+                    graphNode.setTaxId(searchInteraction.getTaxIdA());
+                    graphNode.setColor("rgb(255,0,0)");
+                    graphNodes.add(graphNode);
+                    interactorSet.add(searchInteraction.getInteractorAAc());
+                }
+
+                if (!interactorSet.contains(searchInteraction.getInteractorBAc())) {
+                    GraphNode graphNode = new GraphNode();
+                    graphNode.setId(searchInteraction.getInteractorBAc());
+                    graphNode.setSpeciesName(searchInteraction.getSpeciesB());
+                    graphNode.setTaxId(searchInteraction.getTaxIdB());
+                    graphNode.setColor("rgb(255,0,0)");
+                    graphNodes.add(graphNode);
+                    interactorSet.add(searchInteraction.getInteractorBAc());
+                }
+
+                graphLinks.add(graphLink);
+            } catch (Exception e) {
+                log.info("Interaction with id: " + searchInteraction.getInteractionAc() + "failed to process" +
+                        "and therefore no json will produce");
+                //TODO... Uncomment following
+                //throw e;
+            }
+        }
+
 
         graphJson.setInteractions(graphLinks);
         graphJson.setInteractors(graphNodes);
