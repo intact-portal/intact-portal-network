@@ -21,15 +21,15 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/graph")
-public class SearchIntactController {
+public class SearchGraphController {
 
     private InteractionSearchService interactionSearchService;
     private InteractorSearchService interactorSearchService;
     private GraphService graphService;
 
     @Autowired
-    public SearchIntactController(InteractionSearchService interactionSearchService,
-                                  InteractorSearchService interactorSearchServic, GraphService graphService) {
+    public SearchGraphController(InteractionSearchService interactionSearchService,
+                                 InteractorSearchService interactorSearchServic, GraphService graphService) {
         this.interactorSearchService = interactorSearchService;
         this.interactionSearchService = interactionSearchService;
         this.graphService = graphService;

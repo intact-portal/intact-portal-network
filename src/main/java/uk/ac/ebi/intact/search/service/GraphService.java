@@ -24,9 +24,9 @@ import java.util.Set;
 @Service
 public class GraphService {
 
+    private static final Log log = LogFactory.getLog(GraphService.class);
     private InteractionSearchService interactionSearchService;
     private InteractorSearchService interactorSearchService;
-    private static final Log log = LogFactory.getLog(GraphService.class);
 
     @Autowired
     public GraphService(InteractionSearchService interactionSearchService,
@@ -132,7 +132,7 @@ public class GraphService {
                 graphLinks.add(graphLink);
             } catch (Exception e) {
                 log.info("Interaction with id: " + searchInteraction.getInteractionAc() + "failed to process" +
-                        "and therefore no json will produce");
+                        "and therefore this interaction will not be in graph json");
                 //TODO... Uncomment following
                 //throw e;
             }

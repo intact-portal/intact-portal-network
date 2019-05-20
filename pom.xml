@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.ac.ebi.intact.search</groupId>
-    <artifactId>intact-search</artifactId>
+    <artifactId>intact-search-graph</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>intact-search</name>
+    <name>intact-search-graph</name>
     <description>SpringBoot with spring data interactor solr</description>
 
     <parent>
@@ -27,9 +27,9 @@
     </properties>
 
     <scm>
-        <connection>scm:git:https://github.com/EBI-IntAct/intact-search.git</connection>
-        <developerConnection>scm:git:https://github.com/EBI-IntAct/intact-search.git</developerConnection>
-        <url>https://github.com/EBI-IntAct/intact-search</url>
+        <connection>scm:git:https://github.com/EBI-IntAct/intact-search-graph.git</connection>
+        <developerConnection>scm:git:https://github.com/EBI-IntAct/intact-search-graph.git</developerConnection>
+        <url>https://github.com/EBI-IntAct/intact-search-graph</url>
         <tag>HEAD</tag>
     </scm>
 

@@ -9,7 +9,7 @@ import org.springframework.data.solr.core.SolrOperations;
 import org.springframework.data.solr.core.SolrTemplate;
 
 @SpringBootApplication
-public class IntactSearchServiceApplication {
+public class IntactGraphServiceApplication {
 
 	@Bean
 	public SolrClient solrClient() {
@@ -22,6 +22,6 @@ public class IntactSearchServiceApplication {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(IntactSearchServiceApplication.class, args);
+		SpringApplication.run(IntactGraphServiceApplication.class, args);
 	}
 }
