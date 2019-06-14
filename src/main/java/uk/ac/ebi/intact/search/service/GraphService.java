@@ -110,6 +110,7 @@ public class GraphService {
                 graphLink.setInteractionAc(searchInteraction.getInteractionAc());
                 graphLink.setInteractionType(searchInteraction.getInteractionType());
                 graphLink.setInteractionDetectionMethod(searchInteraction.getInteractionDetectionMethod());
+                graphLink.setColor(GraphUtility.getColorForInteractionType(searchInteraction.getInteractionType()));
 
                 if (!interactorSet.contains(searchInteraction.getInteractorAAc())) {
                     GraphNode graphNode = new GraphNode();

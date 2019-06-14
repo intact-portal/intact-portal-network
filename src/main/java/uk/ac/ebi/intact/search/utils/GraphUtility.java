@@ -156,4 +156,48 @@ public class GraphUtility {
 
         return color;
     }
+
+    public static String getColorForInteractionType(String interactiontype){
+
+        String color =null;
+
+        switch(interactiontype) {
+            case "physical association" :
+                color=InteractionType.IT_PHYSICAL_ASSOCIATION.rgbColor();
+                break;
+
+            case "association" :
+                color=InteractionType.IT_ASSOCIATION.rgbColor();
+                break;
+
+            case "direct interaction" :
+                color=InteractionType.IT_DIRECT_INTERACTION.rgbColor();
+                break;
+
+            case "colocalization" :
+                color=InteractionType.IT_COLOCALIZATION.rgbColor();
+                break;
+
+            case "phosphorylation reaction" :
+                color=InteractionType.IT_PHOSPHORYLATION_REACTION.rgbColor();
+                break;
+
+            case "ubiquitination reaction" :
+                color=InteractionType.IT_UBIQUITINATION_REACTION.rgbColor();
+                break;
+
+            case "dephosphorylation reaction" :
+                color=InteractionType.IT_DEPHOSPHORYLATION_REACTION.rgbColor();
+                break;
+
+            case "enzymatic reaction" :
+                color=InteractionType.IT_ENZYMATIC_REACTION.rgbColor();
+                break;
+
+            default :
+                color = InteractionType.IT_OTHERS.rgbColor();
+        }
+
+        return color;
+    }
 }
