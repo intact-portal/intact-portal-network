@@ -16,6 +16,14 @@ public class GraphLink {
     @JsonProperty("id")
     private String interactionAc;
 
+    @JsonProperty("interaction_type")
+    private String interactionType;
+
+    @JsonProperty("interaction_detection_method")
+    private String interactionDetectionMethod;
+
+    @JsonProperty("color")
+    private String color;
 
     public String getSource() {
         return source;
@@ -40,5 +48,29 @@ public class GraphLink {
 
     public void setInteractionAc(String interactionAc) {
         this.interactionAc = interactionAc;
+    }
+
+    public String getInteractionType() {
+        return interactionType;
+    }
+
+    public void setInteractionType(String interactionType) {
+        this.interactionType = interactionType;
+    }
+
+    public String getInteractionDetectionMethod() {
+        return interactionDetectionMethod;
+    }
+
+    public void setInteractionDetectionMethod(String interactionDetectionMethod) {
+        this.interactionDetectionMethod = interactionDetectionMethod;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }

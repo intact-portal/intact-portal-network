@@ -22,6 +22,15 @@ public class GraphNode {
     @JsonProperty("label")
     private String interactorId;
 
+    @JsonProperty("interactor_type")
+    private String interactorType;
+
+    @JsonProperty("interactor_name")
+    private String interactorName;
+
+    @JsonProperty("preferred_id")
+    private String preferredId;
+
 
     public String getId() {
         return id;
@@ -61,5 +70,29 @@ public class GraphNode {
 
     public void setInteractorId(String interactorId) {
         this.interactorId = interactorId;
+    }
+
+    public String getInteractorType() {
+        return interactorType;
+    }
+
+    public void setInteractorType(String interactorType) {
+        this.interactorType = interactorType;
+    }
+
+    public String getInteractorName() {
+        return interactorName;
+    }
+
+    public void setInteractorName(String interactorName) {
+        this.interactorName = interactorName;
+    }
+
+    public String getPreferredId() {
+        return preferredId;
+    }
+
+    public void setPreferredId(String preferredId) {
+        this.preferredId = preferredId;
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.solr.core.SolrOperations;
 import org.springframework.data.solr.core.SolrTemplate;
+import uk.ac.ebi.intact.search.utils.GraphUtility;
 
 @SpringBootApplication
 public class IntactGraphServiceApplication {
@@ -22,6 +23,7 @@ public class IntactGraphServiceApplication {
 	}
 
 	public static void main(String[] args) {
+		GraphUtility.initializeSpeciesDescendantsMapping();
 		SpringApplication.run(IntactGraphServiceApplication.class, args);
 	}
 }

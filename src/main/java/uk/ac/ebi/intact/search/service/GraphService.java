@@ -12,6 +12,8 @@ import uk.ac.ebi.intact.search.interactor.service.InteractorSearchService;
 import uk.ac.ebi.intact.search.model.GraphJson;
 import uk.ac.ebi.intact.search.model.GraphLink;
 import uk.ac.ebi.intact.search.model.GraphNode;
+import uk.ac.ebi.intact.search.utils.ColourCodes;
+import uk.ac.ebi.intact.search.utils.GraphUtility;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -106,6 +108,8 @@ public class GraphService {
                 graphLink.setSource(searchInteraction.getInteractorAAc());
                 graphLink.setTarget(searchInteraction.getInteractorBAc());
                 graphLink.setInteractionAc(searchInteraction.getInteractionAc());
+                graphLink.setInteractionType(searchInteraction.getInteractionType());
+                graphLink.setInteractionDetectionMethod(searchInteraction.getInteractionDetectionMethod());
 
                 if (!interactorSet.contains(searchInteraction.getInteractorAAc())) {
                     GraphNode graphNode = new GraphNode();
@@ -113,7 +117,10 @@ public class GraphService {
                     graphNode.setSpeciesName(searchInteraction.getSpeciesA());
                     graphNode.setTaxId(searchInteraction.getTaxIdA());
                     graphNode.setInteractorId(searchInteraction.getIdA());
-                    graphNode.setColor("rgb(255,0,0)");
+                    graphNode.setInteractorType(searchInteraction.getTypeA());
+                    graphNode.setPreferredId(searchInteraction.getUniqueIdA());
+                    graphNode.setInteractorName(searchInteraction.getMoleculeA());
+                    graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdA()));
                     graphNodes.add(graphNode);
                     interactorSet.add(searchInteraction.getInteractorAAc());
                 }
@@ -124,7 +131,10 @@ public class GraphService {
                     graphNode.setSpeciesName(searchInteraction.getSpeciesB());
                     graphNode.setTaxId(searchInteraction.getTaxIdB());
                     graphNode.setInteractorId(searchInteraction.getIdB());
-                    graphNode.setColor("rgb(255,0,0)");
+                    graphNode.setInteractorType(searchInteraction.getTypeB());
+                    graphNode.setPreferredId(searchInteraction.getUniqueIdB());
+                    graphNode.setInteractorName(searchInteraction.getMoleculeB());
+                    graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdB()));
                     graphNodes.add(graphNode);
                     interactorSet.add(searchInteraction.getInteractorBAc());
                 }
