@@ -1,10 +1,14 @@
 package uk.ac.ebi.intact.search.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Created by anjali on 17/05/19.
  */
+@JsonTypeName("data")
+@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 public class GraphNode {
 
     @JsonProperty("id")

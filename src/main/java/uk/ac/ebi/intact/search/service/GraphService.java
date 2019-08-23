@@ -12,7 +12,6 @@ import uk.ac.ebi.intact.search.interactor.service.InteractorSearchService;
 import uk.ac.ebi.intact.search.model.GraphJson;
 import uk.ac.ebi.intact.search.model.GraphLink;
 import uk.ac.ebi.intact.search.model.GraphNode;
-import uk.ac.ebi.intact.search.utils.ColourCodes;
 import uk.ac.ebi.intact.search.utils.GraphUtility;
 
 import java.util.ArrayList;
@@ -106,7 +105,11 @@ public class GraphService {
             try {
                 GraphLink graphLink = new GraphLink();
                 graphLink.setSource(searchInteraction.getInteractorAAc());
-                graphLink.setTarget(searchInteraction.getInteractorBAc());
+                if (searchInteraction.getInteractorBAc() != null) {
+                    graphLink.setTarget(searchInteraction.getInteractorBAc());
+                } else {
+                    graphLink.setTarget(graphLink.getSource());
+                }
                 graphLink.setInteractionAc(searchInteraction.getInteractionAc());
                 graphLink.setInteractionType(searchInteraction.getInteractionType());
                 graphLink.setInteractionDetectionMethod(searchInteraction.getInteractionDetectionMethod());
@@ -126,18 +129,20 @@ public class GraphService {
                     interactorSet.add(searchInteraction.getInteractorAAc());
                 }
 
-                if (!interactorSet.contains(searchInteraction.getInteractorBAc())) {
-                    GraphNode graphNode = new GraphNode();
-                    graphNode.setId(searchInteraction.getInteractorBAc());
-                    graphNode.setSpeciesName(searchInteraction.getSpeciesB());
-                    graphNode.setTaxId(searchInteraction.getTaxIdB());
-                    graphNode.setInteractorId(searchInteraction.getMoleculeB());
-                    graphNode.setInteractorType(searchInteraction.getTypeB());
-                    graphNode.setPreferredId(searchInteraction.getUniqueIdB());
-                    graphNode.setInteractorName(searchInteraction.getMoleculeB());
-                    graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdB()));
-                    graphNodes.add(graphNode);
-                    interactorSet.add(searchInteraction.getInteractorBAc());
+                if (searchInteraction.getInteractorBAc() != null) {
+                    if (!interactorSet.contains(searchInteraction.getInteractorBAc())) {
+                        GraphNode graphNode = new GraphNode();
+                        graphNode.setId(searchInteraction.getInteractorBAc());
+                        graphNode.setSpeciesName(searchInteraction.getSpeciesB());
+                        graphNode.setTaxId(searchInteraction.getTaxIdB());
+                        graphNode.setInteractorId(searchInteraction.getMoleculeB());
+                        graphNode.setInteractorType(searchInteraction.getTypeB());
+                        graphNode.setPreferredId(searchInteraction.getUniqueIdB());
+                        graphNode.setInteractorName(searchInteraction.getMoleculeB());
+                        graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdB()));
+                        graphNodes.add(graphNode);
+                        interactorSet.add(searchInteraction.getInteractorBAc());
+                    }
                 }
 
                 graphLinks.add(graphLink);

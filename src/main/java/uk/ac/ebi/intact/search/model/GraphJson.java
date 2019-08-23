@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class GraphJson {
 
-    @JsonProperty("links")
+    @JsonProperty("edges")
     private List<GraphLink> interactions;
 
     @JsonProperty("nodes")
