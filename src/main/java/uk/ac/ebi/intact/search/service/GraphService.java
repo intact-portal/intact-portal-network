@@ -9,9 +9,8 @@ import uk.ac.ebi.intact.search.interactions.model.SearchInteraction;
 import uk.ac.ebi.intact.search.interactions.service.InteractionSearchService;
 import uk.ac.ebi.intact.search.interactor.model.SearchInteractor;
 import uk.ac.ebi.intact.search.interactor.service.InteractorSearchService;
-import uk.ac.ebi.intact.search.model.GraphJson;
-import uk.ac.ebi.intact.search.model.GraphLink;
-import uk.ac.ebi.intact.search.model.GraphNode;
+import uk.ac.ebi.intact.search.model.*;
+import uk.ac.ebi.intact.search.utils.ColourCodes;
 import uk.ac.ebi.intact.search.utils.GraphUtility;
 
 import java.util.ArrayList;
@@ -60,7 +59,34 @@ public class GraphService {
 
         // return toD3FormatAlternative(interactors.getContent(), interactions.getContent());
 
-        return toD3FormatAlternative(interactions.getContent());
+        return toCytoscapeJsonFormat(interactions.getContent());
+    }
+
+    public GraphCompoundJson getGraphCompoundJson
+            (String query,
+             Set<String> speciesFilter,
+             Set<String> interactorTypeFilter,
+             Set<String> detectionMethodFilter,
+             Set<String> interactionTypeFilter,
+             Set<String> interactionHostOrganism,
+             boolean isNegativeFilter,
+             double minMiScore,
+             double maxMiScore,
+             boolean interSpecies,
+             int page,
+             int pageSize) {
+
+        /*Page<SearchInteractor> interactors = this.interactorSearchService.findInteractorForGraphJson(query, speciesFilter, interactorTypeFilter,
+                detectionMethodFilter, interactionTypeFilter, interactionHostOrganism,
+                isNegativeFilter, minMiScore, maxMiScore, page, pageSize);*/
+
+        Page<SearchInteraction> interactions = this.interactionSearchService.findInteractionForGraphJson(query, detectionMethodFilter,
+                interactionTypeFilter, interactionHostOrganism, isNegativeFilter, minMiScore, maxMiScore, speciesFilter, interSpecies,
+                page, pageSize);
+
+        // return toD3FormatAlternative(interactors.getContent(), interactions.getContent());
+
+        return toCytoscapeCompoundJson(interactions.getContent());
     }
 
     private GraphJson toD3Format(List<SearchInteractor> interactors, List<SearchInteraction> interactions) {
@@ -94,7 +120,7 @@ public class GraphService {
     * Delete this code when not needed
     *
     * */
-    private GraphJson toD3FormatAlternative(List<SearchInteraction> interactions) {
+    private GraphJson toCytoscapeJsonFormat(List<SearchInteraction> interactions) {
         GraphJson graphJson = new GraphJson();
         List<GraphNode> graphNodes = new ArrayList<>();
         List<GraphLink> graphLinks = new ArrayList<>();
@@ -125,6 +151,7 @@ public class GraphService {
                     graphNode.setPreferredId(searchInteraction.getUniqueIdA());
                     graphNode.setInteractorName(searchInteraction.getMoleculeA());
                     graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdA()));
+                    graphNode.setClusterId(searchInteraction.getTaxIdA());
                     graphNodes.add(graphNode);
                     interactorSet.add(searchInteraction.getInteractorAAc());
                 }
@@ -140,6 +167,7 @@ public class GraphService {
                         graphNode.setPreferredId(searchInteraction.getUniqueIdB());
                         graphNode.setInteractorName(searchInteraction.getMoleculeB());
                         graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdB()));
+                        graphNode.setClusterId(searchInteraction.getTaxIdB());
                         graphNodes.add(graphNode);
                         interactorSet.add(searchInteraction.getInteractorBAc());
                     }
@@ -159,6 +187,97 @@ public class GraphService {
         graphJson.setInteractors(graphNodes);
 
         return graphJson;
+    }
+
+    private GraphCompoundJson toCytoscapeCompoundJson(List<SearchInteraction> interactions) {
+        GraphCompoundJson graphCompoundJson = new GraphCompoundJson();
+        List<Object> edgesAndNodes = new ArrayList<>();
+        HashSet<String> interactorSet = new HashSet<>();
+        HashSet<String> specieSet = new HashSet<>();
+
+
+        for (SearchInteraction searchInteraction : interactions) {
+            try {
+                GraphEdgeGroup graphEdgeGroup = new GraphEdgeGroup();
+                GraphCompoundLink graphLink = new GraphCompoundLink();
+                graphLink.setSource(searchInteraction.getInteractorAAc());
+                if (searchInteraction.getInteractorBAc() != null) {
+                    graphLink.setTarget(searchInteraction.getInteractorBAc());
+                } else {
+                    graphLink.setTarget(graphLink.getSource());
+                }
+                graphLink.setInteractionAc(searchInteraction.getInteractionAc());
+                graphLink.setInteractionType(searchInteraction.getInteractionType());
+                graphLink.setInteractionDetectionMethod(searchInteraction.getInteractionDetectionMethod());
+                graphLink.setColor(GraphUtility.getColorForInteractionType(searchInteraction.getInteractionType()));
+                graphEdgeGroup.setInteraction(graphLink);
+
+                if (!interactorSet.contains(searchInteraction.getInteractorAAc())) {
+                    GraphCompoundNode graphNode = new GraphCompoundNode();
+                    GraphNodeGroup graphNodeGroup = new GraphNodeGroup();
+                    String parentTaxId = searchInteraction.getTaxIdA() + "";
+                    graphNode.setId(searchInteraction.getInteractorAAc());
+                    graphNode.setSpeciesName(searchInteraction.getSpeciesA());
+                    graphNode.setTaxId(searchInteraction.getTaxIdA());
+                    if (!specieSet.contains(parentTaxId)) {
+                        specieSet.add(parentTaxId);
+                        edgesAndNodes.add(createMetaNode(parentTaxId));
+                    }
+                    graphNode.setInteractorId(searchInteraction.getMoleculeA());
+                    graphNode.setInteractorType(searchInteraction.getTypeA());
+                    graphNode.setPreferredId(searchInteraction.getUniqueIdA());
+                    graphNode.setInteractorName(searchInteraction.getMoleculeA());
+                    graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdA()));
+                    graphNode.setParent(parentTaxId);
+                    graphNodeGroup.setInteractor(graphNode);
+
+                    interactorSet.add(searchInteraction.getInteractorAAc());
+                    edgesAndNodes.add(graphNodeGroup);
+                }
+
+                if (searchInteraction.getInteractorBAc() != null) {
+                    if (!interactorSet.contains(searchInteraction.getInteractorBAc())) {
+                        GraphCompoundNode graphNode = new GraphCompoundNode();
+                        GraphNodeGroup graphNodeGroup = new GraphNodeGroup();
+                        String parentTaxId = searchInteraction.getTaxIdB() + "";
+                        graphNode.setId(searchInteraction.getInteractorBAc());
+                        graphNode.setSpeciesName(searchInteraction.getSpeciesB());
+                        graphNode.setTaxId(searchInteraction.getTaxIdB());
+                        if (!specieSet.contains(parentTaxId)) {
+                            specieSet.add(parentTaxId);
+                            edgesAndNodes.add(createMetaNode(parentTaxId));
+                        }
+                        graphNode.setInteractorId(searchInteraction.getMoleculeB());
+                        graphNode.setInteractorType(searchInteraction.getTypeB());
+                        graphNode.setPreferredId(searchInteraction.getUniqueIdB());
+                        graphNode.setInteractorName(searchInteraction.getMoleculeB());
+                        graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdB()));
+                        graphNode.setParent(parentTaxId);
+                        graphNodeGroup.setInteractor(graphNode);
+                        interactorSet.add(searchInteraction.getInteractorBAc());
+                        edgesAndNodes.add(graphNodeGroup);
+                    }
+                }
+                edgesAndNodes.add(graphEdgeGroup);
+            } catch (Exception e) {
+                log.info("Interaction with id: " + searchInteraction.getInteractionAc() + "failed to process" +
+                        "and therefore this interaction will not be in graph json");
+                //TODO... Uncomment following
+                //throw e;
+            }
+        }
+        graphCompoundJson.setCompoundData(edgesAndNodes);
+        return graphCompoundJson;
+    }
+
+    public GraphNodeGroup createMetaNode(String parentTaxId) {
+        GraphCompoundNode graphCompoundNode = new GraphCompoundNode();
+        GraphNodeGroup graphCompoundNodeGroup = new GraphNodeGroup();
+        graphCompoundNode.setId(parentTaxId);
+        graphCompoundNode.setColor(ColourCodes.META_NODE);
+        graphCompoundNodeGroup.setInteractor(graphCompoundNode);
+
+        return graphCompoundNodeGroup;
     }
 
 }

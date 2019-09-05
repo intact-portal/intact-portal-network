@@ -1,15 +1,11 @@
 package uk.ac.ebi.intact.search.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Created by anjali on 17/05/19.
  */
-@JsonTypeName("data")
-@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
-public class GraphNode {
+public class GraphCompoundNode {
 
     @JsonProperty("id")
     private String id;
@@ -36,7 +32,7 @@ public class GraphNode {
     private String preferredId;
 
     @JsonProperty("parent")
-    private int clusterId;
+    private String parent;
 
 
     public String getId() {
@@ -103,11 +99,11 @@ public class GraphNode {
         this.preferredId = preferredId;
     }
 
-    public int getClusterId() {
-        return clusterId;
+    public String getParent() {
+        return parent;
     }
 
-    public void setClusterId(int clusterId) {
-        this.clusterId = clusterId;
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 }

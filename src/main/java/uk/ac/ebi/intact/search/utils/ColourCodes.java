@@ -14,9 +14,7 @@ public class ColourCodes {
     public static final String SPECIES_TAXID_562 = "rgb(255, 127, 0)"; // Escherichia coli, Color:Orange
     public static final String SPECIES_TAXID_2 = "rgb(255,153,204)"; // chemical synthesis , Color: Pink
     public static final String SPECIES_TAXID_OTHERS = "rgb(255,204,153)"; // Others, Color: Peach Orange
-
-
-
+    public static final String META_NODE = "rgb(220,220,220)";
 
 
 }
