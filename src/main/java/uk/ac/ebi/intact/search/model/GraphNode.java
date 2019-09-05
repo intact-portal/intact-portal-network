@@ -35,7 +35,7 @@ public class GraphNode {
     @JsonProperty("preferred_id")
     private String preferredId;
 
-    @JsonProperty("parent")
+    @JsonProperty("clusterID")
     private int clusterId;
 
 
