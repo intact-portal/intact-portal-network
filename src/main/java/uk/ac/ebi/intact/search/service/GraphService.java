@@ -221,7 +221,7 @@ public class GraphService {
                     graphNode.setTaxId(searchInteraction.getTaxIdA());
                     if (!specieSet.contains(parentTaxId)) {
                         specieSet.add(parentTaxId);
-                        edgesAndNodes.add(createMetaNode(parentTaxId));
+                        edgesAndNodes.add(createMetaNode(parentTaxId, searchInteraction.getSpeciesA()));
                     }
                     graphNode.setInteractorId(searchInteraction.getMoleculeA());
                     graphNode.setInteractorType(searchInteraction.getTypeA());
@@ -245,7 +245,7 @@ public class GraphService {
                         graphNode.setTaxId(searchInteraction.getTaxIdB());
                         if (!specieSet.contains(parentTaxId)) {
                             specieSet.add(parentTaxId);
-                            edgesAndNodes.add(createMetaNode(parentTaxId));
+                            edgesAndNodes.add(createMetaNode(parentTaxId, searchInteraction.getSpeciesB()));
                         }
                         graphNode.setInteractorId(searchInteraction.getMoleculeB());
                         graphNode.setInteractorType(searchInteraction.getTypeB());
@@ -270,11 +270,12 @@ public class GraphService {
         return graphCompoundJson;
     }
 
-    public GraphNodeGroup createMetaNode(String parentTaxId) {
+    public GraphNodeGroup createMetaNode(String parentTaxId, String species) {
         GraphCompoundNode graphCompoundNode = new GraphCompoundNode();
         GraphNodeGroup graphCompoundNodeGroup = new GraphNodeGroup();
         graphCompoundNode.setId(parentTaxId);
         graphCompoundNode.setColor(ColourCodes.META_NODE);
+        graphCompoundNode.setSpeciesName(species);
         graphCompoundNodeGroup.setInteractor(graphCompoundNode);
 
         return graphCompoundNodeGroup;
