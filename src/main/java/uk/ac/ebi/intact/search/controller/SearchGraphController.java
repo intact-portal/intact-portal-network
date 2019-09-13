@@ -78,12 +78,13 @@ public class SearchGraphController {
             @RequestParam(value = "minMiScore", defaultValue = "0", required = false) double minMiScore,
             @RequestParam(value = "maxMiScore", defaultValue = "1", required = false) double maxMiScore,
             @RequestParam(value = "interSpecies", required = false) boolean interSpecies,
+            @RequestParam(value = "isCompound", required = false) boolean isCompound,
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "pageSize", defaultValue = Integer.MAX_VALUE + "", required = false) int pageSize) {
 
         return this.graphService.getGraphCompoundJson(query, speciesFilter, interactorTypeFilter,
                 detectionMethodFilter, interactionTypeFilter, interactionHostOrganismFilter,
-                isNegativeFilter, minMiScore, maxMiScore, interSpecies, page, pageSize);
+                isNegativeFilter, minMiScore, maxMiScore, interSpecies, isCompound, page, pageSize);
     }
 
 }
