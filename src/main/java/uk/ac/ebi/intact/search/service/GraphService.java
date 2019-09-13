@@ -53,9 +53,8 @@ public class GraphService {
                 detectionMethodFilter, interactionTypeFilter, interactionHostOrganism,
                 isNegativeFilter, minMiScore, maxMiScore, page, pageSize);*/
 
-        Page<SearchInteraction> interactions = this.interactionSearchService.findInteractionForGraphJson(query, detectionMethodFilter,
-                interactionTypeFilter, interactionHostOrganism, isNegativeFilter, minMiScore, maxMiScore, speciesFilter, interSpecies,
-                page, pageSize);
+        Page<SearchInteraction> interactions = this.interactionSearchService.findInteractionForGraphJson(query, speciesFilter, interactorTypeFilter, detectionMethodFilter,
+                interactionTypeFilter, interactionHostOrganism, isNegativeFilter, minMiScore, maxMiScore, interSpecies, page, pageSize);
 
         // return toD3FormatAlternative(interactors.getContent(), interactions.getContent());
 
@@ -80,9 +79,8 @@ public class GraphService {
                 detectionMethodFilter, interactionTypeFilter, interactionHostOrganism,
                 isNegativeFilter, minMiScore, maxMiScore, page, pageSize);*/
 
-        Page<SearchInteraction> interactions = this.interactionSearchService.findInteractionForGraphJson(query, detectionMethodFilter,
-                interactionTypeFilter, interactionHostOrganism, isNegativeFilter, minMiScore, maxMiScore, speciesFilter, interSpecies,
-                page, pageSize);
+        Page<SearchInteraction> interactions = this.interactionSearchService.findInteractionForGraphJson(query, speciesFilter, interactorTypeFilter, detectionMethodFilter,
+                interactionTypeFilter, interactionHostOrganism, isNegativeFilter, minMiScore, maxMiScore, interSpecies, page, pageSize);
 
         // return toD3FormatAlternative(interactors.getContent(), interactions.getContent());
 
@@ -151,6 +149,7 @@ public class GraphService {
                     graphNode.setPreferredId(searchInteraction.getUniqueIdA());
                     graphNode.setInteractorName(searchInteraction.getMoleculeA());
                     graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdA()));
+                    graphNode.setShape(GraphUtility.getShapeForInteractorType(searchInteraction.getTypeMIA()));
                     graphNode.setClusterId(searchInteraction.getTaxIdA());
                     graphNodes.add(graphNode);
                     interactorSet.add(searchInteraction.getInteractorAAc());
@@ -167,6 +166,7 @@ public class GraphService {
                         graphNode.setPreferredId(searchInteraction.getUniqueIdB());
                         graphNode.setInteractorName(searchInteraction.getMoleculeB());
                         graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdB()));
+                        graphNode.setShape(GraphUtility.getShapeForInteractorType(searchInteraction.getTypeMIB()));
                         graphNode.setClusterId(searchInteraction.getTaxIdB());
                         graphNodes.add(graphNode);
                         interactorSet.add(searchInteraction.getInteractorBAc());
@@ -221,14 +221,16 @@ public class GraphService {
                     graphNode.setTaxId(searchInteraction.getTaxIdA());
                     if (!specieSet.contains(parentTaxId)) {
                         specieSet.add(parentTaxId);
-                        edgesAndNodes.add(createMetaNode(parentTaxId, searchInteraction.getSpeciesA()));
+                        //   edgesAndNodes.add(createMetaNode(parentTaxId, searchInteraction.getSpeciesA()));
                     }
                     graphNode.setInteractorId(searchInteraction.getMoleculeA());
                     graphNode.setInteractorType(searchInteraction.getTypeA());
                     graphNode.setPreferredId(searchInteraction.getUniqueIdA());
                     graphNode.setInteractorName(searchInteraction.getMoleculeA());
                     graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdA()));
-                    graphNode.setParent(parentTaxId);
+                    graphNode.setShape(GraphUtility.getShapeForInteractorType(searchInteraction.getTypeMIA()));
+                    graphNode.setClusterId(searchInteraction.getTaxIdA());
+                    //  graphNode.setParent(parentTaxId);
                     graphNodeGroup.setInteractor(graphNode);
 
                     interactorSet.add(searchInteraction.getInteractorAAc());
@@ -245,14 +247,16 @@ public class GraphService {
                         graphNode.setTaxId(searchInteraction.getTaxIdB());
                         if (!specieSet.contains(parentTaxId)) {
                             specieSet.add(parentTaxId);
-                            edgesAndNodes.add(createMetaNode(parentTaxId, searchInteraction.getSpeciesB()));
+                            //  edgesAndNodes.add(createMetaNode(parentTaxId, searchInteraction.getSpeciesB()));
                         }
                         graphNode.setInteractorId(searchInteraction.getMoleculeB());
                         graphNode.setInteractorType(searchInteraction.getTypeB());
                         graphNode.setPreferredId(searchInteraction.getUniqueIdB());
                         graphNode.setInteractorName(searchInteraction.getMoleculeB());
                         graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdB()));
-                        graphNode.setParent(parentTaxId);
+                        graphNode.setShape(GraphUtility.getShapeForInteractorType(searchInteraction.getTypeMIB()));
+                        graphNode.setClusterId(searchInteraction.getTaxIdB());
+                        // graphNode.setParent(parentTaxId);
                         graphNodeGroup.setInteractor(graphNode);
                         interactorSet.add(searchInteraction.getInteractorBAc());
                         edgesAndNodes.add(graphNodeGroup);

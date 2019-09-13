@@ -12,18 +12,19 @@ import uk.ac.ebi.intact.search.utils.GraphUtility;
 @SpringBootApplication
 public class IntactGraphServiceApplication {
 
-	@Bean
-	public SolrClient solrClient() {
-		return new HttpSolrClient("http://localhost:8983/solr");
-	}
+    public static void main(String[] args) {
+        GraphUtility.initializeSpeciesDescendantsMapping();
+        GraphUtility.initializeInteractorTypeDescendantsMapping();
+        SpringApplication.run(IntactGraphServiceApplication.class, args);
+    }
 
-	@Bean
-	public SolrOperations solrTemplate() {
-		return new SolrTemplate(solrClient());
-	}
+    @Bean
+    public SolrClient solrClient() {
+        return new HttpSolrClient("http://localhost:8983/solr");
+    }
 
-	public static void main(String[] args) {
-		GraphUtility.initializeSpeciesDescendantsMapping();
-		SpringApplication.run(IntactGraphServiceApplication.class, args);
-	}
+    @Bean
+    public SolrOperations solrTemplate() {
+        return new SolrTemplate(solrClient());
+    }
 }

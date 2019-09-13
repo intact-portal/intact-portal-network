@@ -35,6 +35,9 @@ public class GraphNode {
     @JsonProperty("preferred_id")
     private String preferredId;
 
+    @JsonProperty("shape")
+    private String shape;
+
     @JsonProperty("clusterID")
     private int clusterId;
 
@@ -109,5 +112,13 @@ public class GraphNode {
 
     public void setClusterId(int clusterId) {
         this.clusterId = clusterId;
+    }
+
+    public String getShape() {
+        return shape;
+    }
+
+    public void setShape(String shape) {
+        this.shape = shape;
     }
 }
