@@ -5,15 +5,15 @@ package uk.ac.ebi.intact.search.utils;
  */
 public enum InteractionType {
 
-    IT_PHYSICAL_ASSOCIATION("physical association", "rgb(255,153,204)"),//Color: Pink
-    IT_ASSOCIATION("association", "rgb(255, 127, 0)"),//Color:Orange
-    IT_DIRECT_INTERACTION("direct interaction", "rgb(0, 153, 153)"),//Color: Cyan
-    IT_COLOCALIZATION("colocalization", "rgb(0, 255, 0)"),//Color: Green
-    IT_PHOSPHORYLATION_REACTION("phosphorylation reaction", "rgb(0, 0, 255)"),//Color : Blue
-    IT_UBIQUITINATION_REACTION("ubiquitination reaction", "rgb(75, 0, 130)"),// Color : Indigo
-    IT_DEPHOSPHORYLATION_REACTION("dephosphorylation reaction", "rgb(255,0,0)"),//Color: Red
-    IT_ENZYMATIC_REACTION("enzymatic reaction", "rgb(148, 0, 211)"),//Color: Dark Violet
-    IT_OTHERS("others", "rgb(128, 128, 128)");//Color:Grey
+    IT_PHYSICAL_ASSOCIATION("physical association", "rgb(51, 94, 148)"),//Color: Navy blue
+    IT_ASSOCIATION("association", "rgb(107, 13, 10)"),//Color: Brown
+    IT_DIRECT_INTERACTION("direct interaction", "rgb(88, 115, 29)"),//Color: Green
+    IT_COLOCALIZATION("colocalization", "rgb(97, 74, 124)"),//Color: Violet
+    IT_PHOSPHORYLATION_REACTION("phosphorylation reaction", "rgb(47, 132, 156)"),//Color : Cyan
+    IT_UBIQUITINATION_REACTION("ubiquitination reaction", "rgb(202, 115, 47)"),// Color : Orange
+    IT_DEPHOSPHORYLATION_REACTION("dephosphorylation reaction", "rgb(144, 163, 198)"),//Color: Light blue
+    IT_ENZYMATIC_REACTION("enzymatic reaction", "rgb(141, 102, 102)"),//Color: Light brown
+    IT_OTHERS("others", "rgb(173, 188, 148)");//Color:Light green
 
     private String shortLabel;
     private String rgbColor;
@@ -30,7 +30,6 @@ public enum InteractionType {
     public String rgbColor() {
         return rgbColor;
     }
-
 
 
 }
