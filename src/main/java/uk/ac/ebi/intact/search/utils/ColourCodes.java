@@ -5,9 +5,9 @@ package uk.ac.ebi.intact.search.utils;
  */
 public class ColourCodes {
 
-    public static final String SPECIES_TAXID_9606 = "rgb(51, 94, 148)"; // Homo Sapiens, Color: Red
-    public static final String SPECIES_TAXID_4932 = "rgb(88, 115, 29)"; // Mus musculus, Dark Violet
-    public static final String SPECIES_TAXID_10090 = "rgb(107, 13, 10)"; // Saccharomyces cerevisiae, Color : Indigo
+    public static final String SPECIES_TAXID_9606 = "rgb(51, 94, 148)"; // Homo Sapiens, Color: Navy blue
+    public static final String SPECIES_TAXID_4932 = "rgb(107, 13, 10)"; // Saccharomyces cerevisiae, Indigo
+    public static final String SPECIES_TAXID_10090 = "rgb(88, 115, 29)"; // Mus musculus Saccharomyces cerevisiae, Color : Green
     public static final String SPECIES_TAXID_3702 = "rgb(97, 74, 124)"; // Arabidopsis thaliana (Mouse-ear cress),Color : Blue
     public static final String SPECIES_TAXID_7227 = "rgb(47, 132, 156)"; // Drosophila melanogaster, Color: Green
     public static final String SPECIES_TAXID_6239 = "rgb(202, 115, 47)"; // Caenorhabditis elegans, Color: Cyan
