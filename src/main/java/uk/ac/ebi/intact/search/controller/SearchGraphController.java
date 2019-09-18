@@ -1,10 +1,7 @@
 package uk.ac.ebi.intact.search.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.ac.ebi.intact.search.interactions.service.InteractionSearchService;
 import uk.ac.ebi.intact.search.interactor.service.InteractorSearchService;
 import uk.ac.ebi.intact.search.model.GraphCompoundJson;
@@ -38,6 +35,7 @@ public class SearchGraphController {
         return "Welcome to Spring Boot solr Example";
     }
 
+    @CrossOrigin(origins = "*")
     @RequestMapping(value = "/getGraphJson",
             params = {
                     "query",
@@ -62,6 +60,7 @@ public class SearchGraphController {
                 isNegativeFilter, minMiScore, maxMiScore, interSpecies, page, pageSize);
     }
 
+    @CrossOrigin(origins = "*")
     @RequestMapping(value = "/getGraphCompoundJson",
             params = {
                     "query",
