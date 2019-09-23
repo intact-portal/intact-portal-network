@@ -28,6 +28,9 @@ public class GraphCompoundLink {
     @JsonProperty("shape")
     private String shape;
 
+    @JsonProperty("collapsed_color")
+    private String collapsedColor;
+
     public String getSource() {
         return source;
     }
@@ -83,5 +86,13 @@ public class GraphCompoundLink {
 
     public void setShape(String shape) {
         this.shape = shape;
+    }
+
+    public String getCollapsedColor() {
+        return collapsedColor;
+    }
+
+    public void setCollapsedColor(String collapsedColor) {
+        this.collapsedColor = collapsedColor;
     }
 }

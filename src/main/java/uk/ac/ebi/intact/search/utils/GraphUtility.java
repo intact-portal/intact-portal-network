@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -305,6 +306,24 @@ public class GraphUtility {
                 shape = EdgeShape.SOLID_LINE;
         }
         return shape;
+    }
+
+    public static String getColorForCollapsedEdge(double miScore) {
+
+        Color start = EdgeColor.COLLAPSED_EDGE_COLOR_START;
+        Color end = EdgeColor.COLLAPSED_EDGE_COLOR_END;
+        float blending = (float) miScore;
+
+        float inverse_blending = 1 - blending;
+
+        float red = start.getRed() * blending + end.getRed() * inverse_blending;
+        float green = start.getGreen() * blending + end.getGreen() * inverse_blending;
+        float blue = start.getBlue() * blending + end.getBlue() * inverse_blending;
+
+        //note that if i pass float values they have to be in the range of 0.0-1.0
+        //and not in 0-255 like the ones i get returned by the getters.
+        Color collapsedEdgeColor = new Color(red / 255, green / 255, blue / 255);
+        return "rgb(" + collapsedEdgeColor.getRed() + "," + collapsedEdgeColor.getGreen() + "," + collapsedEdgeColor.getBlue() + ")";
     }
 
 }
