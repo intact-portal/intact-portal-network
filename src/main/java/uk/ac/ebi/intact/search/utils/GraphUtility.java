@@ -292,4 +292,19 @@ public class GraphUtility {
 
         return shape;
     }
+
+    public static String getShapeForExpansionType(String expansionType) {
+
+        String shape = null;
+        switch (expansionType) {
+            case "spoke expansion":
+                shape = EdgeShape.DASHED_LINE;
+                break;
+
+            default:
+                shape = EdgeShape.SOLID_LINE;
+        }
+        return shape;
+    }
+
 }

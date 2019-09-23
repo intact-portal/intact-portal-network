@@ -25,6 +25,9 @@ public class GraphCompoundLink {
     @JsonProperty("color")
     private String color;
 
+    @JsonProperty("shape")
+    private String shape;
+
     public String getSource() {
         return source;
     }
@@ -72,5 +75,13 @@ public class GraphCompoundLink {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public String getShape() {
+        return shape;
+    }
+
+    public void setShape(String shape) {
+        this.shape = shape;
     }
 }
