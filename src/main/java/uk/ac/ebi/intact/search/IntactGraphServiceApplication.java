@@ -15,6 +15,7 @@ public class IntactGraphServiceApplication {
     public static void main(String[] args) {
         GraphUtility.initializeSpeciesDescendantsMapping();
         GraphUtility.initializeInteractorTypeDescendantsMapping();
+        GraphUtility.initializeInteractionTypeDescendantsMapping();
         SpringApplication.run(IntactGraphServiceApplication.class, args);
     }
 

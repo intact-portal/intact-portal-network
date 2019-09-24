@@ -24,6 +24,8 @@ public class GraphUtility {
     public static final HashMap<Integer, Integer> descendantsParentMap = new HashMap<>();
     public static final HashMap<String, List<String>> interactorTypeDescendantsMap = new HashMap<>();
     public static final HashMap<String, String> interactorTypeParentMap = new HashMap<>();
+    public static final HashMap<String, List<String>> interactionTypeDescendantsMap = new HashMap<>();
+    public static final HashMap<String, String> interactionTypeParentMap = new HashMap<>();
     private static final Log logger = LogFactory.getLog(GraphUtility.class);
 
     public static void initializeSpeciesDescendantsMapping() {
@@ -138,6 +140,62 @@ public class GraphUtility {
         }
     }
 
+    public static void initializeInteractionTypeDescendantsMapping() {
+
+        interactionTypeDescendantsMap.put("MI:0407", null);// direct interaction
+        interactionTypeDescendantsMap.put("MI:0217", null);// phosphorylation reaction
+        interactionTypeDescendantsMap.put("MI:0203", null);// dephosphorylation reaction
+
+        for (String parentInteractionType : interactionTypeDescendantsMap.keySet()) {
+
+            String jsonQuery = "https://www.ebi.ac.uk/ols/api/ontologies/mi/terms/" +
+                    "http%253A%252F%252Fpurl.obolibrary.org%252Fobo%252F" + parentInteractionType.replaceAll(":", "_") + "/descendants?size=1000";
+
+            String jsonText = "";
+            List<String> typeChildren = new ArrayList<>();
+            try {
+                boolean hasNext = true;
+                while (hasNext) {
+                    jsonText = getJsonForUrl(jsonQuery);// mainQry
+                    if (jsonText.length() > 0) {
+                        ObjectMapper mapper = new ObjectMapper();
+                        JsonNode jsonNode = mapper.readTree(jsonText);
+                        JsonNode embedded = jsonNode.get("_embedded");
+                        JsonNode termChildren = embedded.get("terms");
+
+                        for (final JsonNode objNode : termChildren) {
+                            String obo_id = objNode.get("obo_id").textValue();
+                            typeChildren.add(obo_id);
+                            interactionTypeParentMap.put(obo_id, parentInteractionType);
+                        }
+
+                        JsonNode links = jsonNode.get("_links");
+                        JsonNode nextPage = links.get("next");
+                        if (nextPage != null) {
+                            jsonQuery = nextPage.get("href").textValue();
+                        } else {
+                            hasNext = false;
+                        }
+                    }
+                }
+            } catch (MalformedURLException e) {
+                logger.error(e.getMessage());
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
+            if (typeChildren.isEmpty()) {
+                typeChildren = null;
+            }
+            interactionTypeDescendantsMap.put(parentInteractionType, typeChildren);
+        }
+
+        interactionTypeDescendantsMap.put("MI:0914", null);// association
+        interactionTypeDescendantsMap.put("MI:0915", null);// physical association
+        interactionTypeDescendantsMap.put("MI:0403", null);// colocalization
+    }
+
     /**
      * Gets Json text from the given query url
      *
@@ -173,85 +231,92 @@ public class GraphUtility {
         Integer specieTaxId = ((parentSpecie != null) ? parentSpecie : (taxId));
 
         String color = null;
-        switch (specieTaxId) {
-            case 9606:
-                color = ColourCodes.SPECIES_TAXID_9606;
-                break;
 
-            case 562:
-                color = ColourCodes.SPECIES_TAXID_562;
-                break;
+        if (specieTaxId == null) {
+            color = ColourCodes.SPECIES_TAXID_OTHERS;
+        } else {
+            switch (specieTaxId) {
+                case 9606:
+                    color = ColourCodes.SPECIES_TAXID_9606;
+                    break;
 
-            case 3702:
-                color = ColourCodes.SPECIES_TAXID_3702;
-                break;
+                case 562:
+                    color = ColourCodes.SPECIES_TAXID_562;
+                    break;
 
-            case 4932:
-                color = ColourCodes.SPECIES_TAXID_4932;
-                break;
+                case 3702:
+                    color = ColourCodes.SPECIES_TAXID_3702;
+                    break;
 
-            case 6239:
-                color = ColourCodes.SPECIES_TAXID_6239;
-                break;
+                case 4932:
+                    color = ColourCodes.SPECIES_TAXID_4932;
+                    break;
 
-            case 7227:
-                color = ColourCodes.SPECIES_TAXID_7227;
-                break;
+                case 6239:
+                    color = ColourCodes.SPECIES_TAXID_6239;
+                    break;
 
-            case 10090:
-                color = ColourCodes.SPECIES_TAXID_10090;
-                break;
+                case 7227:
+                    color = ColourCodes.SPECIES_TAXID_7227;
+                    break;
 
-            case -2:
-                color = ColourCodes.SPECIES_TAXID_2;
-                break;
+                case 10090:
+                    color = ColourCodes.SPECIES_TAXID_10090;
+                    break;
 
-            default:
-                color = ColourCodes.SPECIES_TAXID_OTHERS;
+                case -2:
+                    color = ColourCodes.SPECIES_TAXID_2;
+                    break;
+
+                default:
+                    color = ColourCodes.SPECIES_TAXID_OTHERS;
+            }
         }
 
         return color;
     }
 
-    public static String getColorForInteractionType(String interactiontype) {
+    public static String getColorForInteractionType(String interactionTypeMIIdentifier) {
 
+        String interactionTypeIdentifier = null;
         String color = null;
+        if (interactionTypeDescendantsMap.containsKey(interactionTypeMIIdentifier)) {
+            interactionTypeIdentifier = interactionTypeMIIdentifier;
+        } else {
+            interactionTypeIdentifier = GraphUtility.interactionTypeParentMap.get(interactionTypeMIIdentifier);
+        }
 
-        switch (interactiontype) {
-            case "physical association":
-                color = InteractionType.IT_PHYSICAL_ASSOCIATION.rgbColor();
-                break;
+        if (interactionTypeIdentifier == null) {
+            color = EdgeColor.OTHERS;
+        } else {
+            switch (interactionTypeIdentifier) {
+                case "MI:0915": // physical association
+                    color = EdgeColor.PHYSICAL_ASSOCIATION;
+                    break;
 
-            case "association":
-                color = InteractionType.IT_ASSOCIATION.rgbColor();
-                break;
+                case "MI:0914": // association
+                    color = EdgeColor.ASSOCIATION;
+                    break;
 
-            case "direct interaction":
-                color = InteractionType.IT_DIRECT_INTERACTION.rgbColor();
-                break;
+                case "MI:0407": // direct interaction
+                    color = EdgeColor.DIRECT_INTERACTION;
+                    break;
 
-            case "colocalization":
-                color = InteractionType.IT_COLOCALIZATION.rgbColor();
-                break;
+                case "MI:0403": // colocalization
+                    color = EdgeColor.COLOCALIZATION;
+                    break;
 
-            case "phosphorylation reaction":
-                color = InteractionType.IT_PHOSPHORYLATION_REACTION.rgbColor();
-                break;
+                case "MI:0217": // phosphorylation reaction
+                    color = EdgeColor.PHOSPHORYLATION_REACTION;
+                    break;
 
-            case "ubiquitination reaction":
-                color = InteractionType.IT_UBIQUITINATION_REACTION.rgbColor();
-                break;
+                case "MI:0203": // dephosphorylation reaction
+                    color = EdgeColor.DEPHOSPHORYLATION_REACTION;
+                    break;
 
-            case "dephosphorylation reaction":
-                color = InteractionType.IT_DEPHOSPHORYLATION_REACTION.rgbColor();
-                break;
-
-            case "enzymatic reaction":
-                color = InteractionType.IT_ENZYMATIC_REACTION.rgbColor();
-                break;
-
-            default:
-                color = InteractionType.IT_OTHERS.rgbColor();
+                default:
+                    color = EdgeColor.OTHERS;
+            }
         }
 
         return color;
@@ -262,33 +327,37 @@ public class GraphUtility {
         String interactorTypeMI = ((parentInteractorType != null) ? parentInteractorType : (interactorType));
 
         String shape = null;
-        switch (interactorTypeMI) {
-            case "MI:1100": //Bioactive entity
-                shape = NodeShape.TRIANGLE;
-                break;
+        if (interactorTypeMI == null) {
+            shape = NodeShape.TAG;
+        } else {
+            switch (interactorTypeMI) {
+                case "MI:1100": //Bioactive entity
+                    shape = NodeShape.TRIANGLE;
+                    break;
 
-            case "MI:0320": //RNA
-                shape = NodeShape.DIAMOND;
-                break;
+                case "MI:0320": //RNA
+                    shape = NodeShape.DIAMOND;
+                    break;
 
-            case "MI:0319": //DNA
-                shape = NodeShape.UPSIDE_DOWN_CUT_TRIANGLE;
-                break;
+                case "MI:0319": //DNA
+                    shape = NodeShape.UPSIDE_DOWN_CUT_TRIANGLE;
+                    break;
 
-            case "MI:0250": // Gene
-                shape = NodeShape.ROUNDED_RECTANGLE;
-                break;
+                case "MI:0250": // Gene
+                    shape = NodeShape.ROUNDED_RECTANGLE;
+                    break;
 
-            case "MI:0326":// Protein
-                shape = NodeShape.ELLIPSE;
-                break;
+                case "MI:0326":// Protein
+                    shape = NodeShape.ELLIPSE;
+                    break;
 
-            case "MI:0327": // Peptide
-                shape = NodeShape.ELLIPSE;
-                break;
+                case "MI:0327": // Peptide
+                    shape = NodeShape.ELLIPSE;
+                    break;
 
-            default:
-                shape = NodeShape.TAG;
+                default:
+                    shape = NodeShape.TAG;
+            }
         }
 
         return shape;
@@ -297,13 +366,17 @@ public class GraphUtility {
     public static String getShapeForExpansionType(String expansionType) {
 
         String shape = null;
-        switch (expansionType) {
-            case "spoke expansion":
-                shape = EdgeShape.DASHED_LINE;
-                break;
+        if (expansionType == null) {
+            shape = EdgeShape.SOLID_LINE;
+        } else {
+            switch (expansionType) {
+                case "spoke expansion":
+                    shape = EdgeShape.DASHED_LINE;
+                    break;
 
-            default:
-                shape = EdgeShape.SOLID_LINE;
+                default:
+                    shape = EdgeShape.SOLID_LINE;
+            }
         }
         return shape;
     }

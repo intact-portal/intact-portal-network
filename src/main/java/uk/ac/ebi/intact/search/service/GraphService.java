@@ -211,7 +211,7 @@ public class GraphService {
                 graphLink.setInteractionAc(searchInteraction.getInteractionAc());
                 graphLink.setInteractionType(searchInteraction.getInteractionType());
                 graphLink.setInteractionDetectionMethod(searchInteraction.getInteractionDetectionMethod());
-                graphLink.setColor(GraphUtility.getColorForInteractionType(searchInteraction.getInteractionType()));
+                graphLink.setColor(GraphUtility.getColorForInteractionType(searchInteraction.getInteractionTypeMIIdentifier()));
                 graphLink.setCollapsedColor(GraphUtility.getColorForCollapsedEdge(searchInteraction.getIntactMiscore()));
                 graphLink.setShape(GraphUtility.getShapeForExpansionType(searchInteraction.getExpansionMethod()));
                 graphEdgeGroup.setInteraction(graphLink);
