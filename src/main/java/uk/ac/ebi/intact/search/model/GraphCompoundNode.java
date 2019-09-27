@@ -40,6 +40,9 @@ public class GraphCompoundNode {
     @JsonProperty("clusterID")
     private int clusterId;
 
+    @JsonProperty("disrupted_by_mutation")
+    private boolean disruptedByMutation;
+
 
     public String getId() {
         return id;
@@ -127,5 +130,13 @@ public class GraphCompoundNode {
 
     public void setClusterId(int clusterId) {
         this.clusterId = clusterId;
+    }
+
+    public boolean getDisruptedByMutation() {
+        return disruptedByMutation;
+    }
+
+    public void setDisruptedByMutation(boolean disruptedByMutation) {
+        this.disruptedByMutation = disruptedByMutation;
     }
 }

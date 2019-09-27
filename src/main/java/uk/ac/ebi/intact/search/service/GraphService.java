@@ -214,6 +214,7 @@ public class GraphService {
                 graphLink.setColor(GraphUtility.getColorForInteractionType(searchInteraction.getInteractionTypeMIIdentifier()));
                 graphLink.setCollapsedColor(GraphUtility.getColorForCollapsedEdge(searchInteraction.getIntactMiscore()));
                 graphLink.setShape(GraphUtility.getShapeForExpansionType(searchInteraction.getExpansionMethod()));
+                graphLink.setDisruptedMutation(searchInteraction.isInteractionDisruptedByMutation());
                 graphEdgeGroup.setInteraction(graphLink);
 
                 if (!interactorSet.contains(searchInteraction.getInteractorAAc())) {
@@ -237,6 +238,7 @@ public class GraphService {
                     graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdA()));
                     graphNode.setShape(GraphUtility.getShapeForInteractorType(searchInteraction.getTypeMIA()));
                     graphNode.setClusterId(searchInteraction.getTaxIdA());
+                    graphNode.setDisruptedByMutation(searchInteraction.isDisruptedByMutationA());
                     graphNodeGroup.setInteractor(graphNode);
 
                     interactorSet.add(searchInteraction.getInteractorAAc());
@@ -265,6 +267,7 @@ public class GraphService {
                         graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdB()));
                         graphNode.setShape(GraphUtility.getShapeForInteractorType(searchInteraction.getTypeMIB()));
                         graphNode.setClusterId(searchInteraction.getTaxIdB());
+                        graphNode.setDisruptedByMutation(searchInteraction.isDisruptedByMutationB());
                         graphNodeGroup.setInteractor(graphNode);
                         interactorSet.add(searchInteraction.getInteractorBAc());
                         edgesAndNodes.add(graphNodeGroup);
