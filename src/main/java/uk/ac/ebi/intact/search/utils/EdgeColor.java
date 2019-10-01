@@ -12,7 +12,7 @@ public class EdgeColor {
 
     public static final String ASSOCIATION = "rgb(153,153,255)";
     public static final String PHYSICAL_ASSOCIATION = "rgb(153,204,0)";
-    public static final String DIRECT_INTERACTION = "rgb(255,51,0)";
+    public static final String DIRECT_INTERACTION = "rgb(255,165,0)";
     public static final String COLOCALIZATION = "rgb(255,222,62)";
     public static final String PHOSPHORYLATION_REACTION = "rgb(153,0,0)";
     public static final String DEPHOSPHORYLATION_REACTION = "rgb(153,153,0)";
