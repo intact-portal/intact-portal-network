@@ -31,8 +31,8 @@ public class GraphCompoundLink {
     @JsonProperty("collapsed_color")
     private String collapsedColor;
 
-    @JsonProperty("disrupted_mutation")
-    private boolean disruptedMutation;
+    @JsonProperty("disrupted_by_mutation")
+    private boolean disruptedByMutation;
 
     public String getSource() {
         return source;
@@ -99,11 +99,11 @@ public class GraphCompoundLink {
         this.collapsedColor = collapsedColor;
     }
 
-    public boolean getDisruptedMutation() {
-        return disruptedMutation;
+    public boolean isDisruptedByMutation() {
+        return disruptedByMutation;
     }
 
-    public void setDisruptedMutation(boolean disruptedMutation) {
-        this.disruptedMutation = disruptedMutation;
+    public void setDisruptedByMutation(boolean disruptedByMutation) {
+        this.disruptedByMutation = disruptedByMutation;
     }
 }

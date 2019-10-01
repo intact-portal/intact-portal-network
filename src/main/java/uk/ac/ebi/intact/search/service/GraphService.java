@@ -14,10 +14,7 @@ import uk.ac.ebi.intact.search.utils.ColourCodes;
 import uk.ac.ebi.intact.search.utils.GraphUtility;
 import uk.ac.ebi.intact.search.utils.NodeShape;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by anjali on 16/05/19.
@@ -194,7 +191,7 @@ public class GraphService {
     private GraphCompoundJson toCytoscapeCompoundJson(List<SearchInteraction> interactions, boolean isCompound) {
         GraphCompoundJson graphCompoundJson = new GraphCompoundJson();
         List<Object> edgesAndNodes = new ArrayList<>();
-        HashSet<String> interactorSet = new HashSet<>();
+        HashMap<String, GraphCompoundNode> interactorAcAndNodeMap = new HashMap<String, GraphCompoundNode>();
         HashSet<String> specieSet = new HashSet<>();
 
 
@@ -214,39 +211,44 @@ public class GraphService {
                 graphLink.setColor(GraphUtility.getColorForInteractionType(searchInteraction.getInteractionTypeMIIdentifier()));
                 graphLink.setCollapsedColor(GraphUtility.getColorForCollapsedEdge(searchInteraction.getIntactMiscore()));
                 graphLink.setShape(GraphUtility.getShapeForExpansionType(searchInteraction.getExpansionMethod()));
-                graphLink.setDisruptedMutation(searchInteraction.isInteractionDisruptedByMutation());
+                graphLink.setDisruptedByMutation(searchInteraction.isInteractionDisruptedByMutation());
                 graphEdgeGroup.setInteraction(graphLink);
 
-                if (!interactorSet.contains(searchInteraction.getInteractorAAc())) {
-                    GraphCompoundNode graphNode = new GraphCompoundNode();
-                    GraphNodeGroup graphNodeGroup = new GraphNodeGroup();
-                    String parentTaxId = searchInteraction.getTaxIdA() + "";
-                    graphNode.setId(searchInteraction.getInteractorAAc());
-                    graphNode.setSpeciesName(searchInteraction.getSpeciesA());
-                    graphNode.setTaxId(searchInteraction.getTaxIdA());
-                    if (isCompound) {
-                        if (!specieSet.contains(parentTaxId)) {
-                            specieSet.add(parentTaxId);
-                            edgesAndNodes.add(createMetaNode(parentTaxId, searchInteraction.getSpeciesA()));
+                if (searchInteraction.getInteractorAAc() != null) {
+                    if (!interactorAcAndNodeMap.keySet().contains(searchInteraction.getInteractorAAc())) {
+                        GraphCompoundNode graphNode = new GraphCompoundNode();
+                        GraphNodeGroup graphNodeGroup = new GraphNodeGroup();
+                        String parentTaxId = searchInteraction.getTaxIdA() + "";
+                        graphNode.setId(searchInteraction.getInteractorAAc());
+                        graphNode.setSpeciesName(searchInteraction.getSpeciesA());
+                        graphNode.setTaxId(searchInteraction.getTaxIdA());
+                        if (isCompound) {
+                            if (!specieSet.contains(parentTaxId)) {
+                                specieSet.add(parentTaxId);
+                                edgesAndNodes.add(createMetaNode(parentTaxId, searchInteraction.getSpeciesA()));
+                            }
+                            graphNode.setParent(parentTaxId);
                         }
-                        graphNode.setParent(parentTaxId);
-                    }
-                    graphNode.setInteractorId(searchInteraction.getMoleculeA());
-                    graphNode.setInteractorType(searchInteraction.getTypeA());
-                    graphNode.setPreferredId(searchInteraction.getUniqueIdA());
-                    graphNode.setInteractorName(searchInteraction.getMoleculeA());
-                    graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdA()));
-                    graphNode.setShape(GraphUtility.getShapeForInteractorType(searchInteraction.getTypeMIA()));
-                    graphNode.setClusterId(searchInteraction.getTaxIdA());
-                    graphNode.setDisruptedByMutation(searchInteraction.isDisruptedByMutationA());
-                    graphNodeGroup.setInteractor(graphNode);
+                        graphNode.setInteractorId(searchInteraction.getMoleculeA());
+                        graphNode.setInteractorType(searchInteraction.getTypeA());
+                        graphNode.setPreferredId(searchInteraction.getUniqueIdA());
+                        graphNode.setInteractorName(searchInteraction.getMoleculeA());
+                        graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdA()));
+                        graphNode.setShape(GraphUtility.getShapeForInteractorType(searchInteraction.getTypeMIA()));
+                        graphNode.setClusterId(searchInteraction.getTaxIdA());
+                        graphNode.setMutation(searchInteraction.isMutationA());
+                        graphNodeGroup.setInteractor(graphNode);
 
-                    interactorSet.add(searchInteraction.getInteractorAAc());
-                    edgesAndNodes.add(graphNodeGroup);
+                        interactorAcAndNodeMap.put(searchInteraction.getInteractorAAc(), graphNode);
+                        edgesAndNodes.add(graphNodeGroup);
+                    } else if (searchInteraction.isMutationA()) {
+                        GraphCompoundNode existingGraphNode = interactorAcAndNodeMap.get(searchInteraction.getInteractorAAc());
+                        existingGraphNode.setMutation(searchInteraction.isMutationA());
+                    }
                 }
 
                 if (searchInteraction.getInteractorBAc() != null) {
-                    if (!interactorSet.contains(searchInteraction.getInteractorBAc())) {
+                    if (!interactorAcAndNodeMap.keySet().contains(searchInteraction.getInteractorBAc())) {
                         GraphCompoundNode graphNode = new GraphCompoundNode();
                         GraphNodeGroup graphNodeGroup = new GraphNodeGroup();
                         String parentTaxId = searchInteraction.getTaxIdB() + "";
@@ -267,10 +269,13 @@ public class GraphService {
                         graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdB()));
                         graphNode.setShape(GraphUtility.getShapeForInteractorType(searchInteraction.getTypeMIB()));
                         graphNode.setClusterId(searchInteraction.getTaxIdB());
-                        graphNode.setDisruptedByMutation(searchInteraction.isDisruptedByMutationB());
+                        graphNode.setMutation(searchInteraction.isMutationB());
                         graphNodeGroup.setInteractor(graphNode);
-                        interactorSet.add(searchInteraction.getInteractorBAc());
+                        interactorAcAndNodeMap.put(searchInteraction.getInteractorBAc(), graphNode);
                         edgesAndNodes.add(graphNodeGroup);
+                    } else if (searchInteraction.isMutationB()) {
+                        GraphCompoundNode existingGraphNode = interactorAcAndNodeMap.get(searchInteraction.getInteractorBAc());
+                        existingGraphNode.setMutation(searchInteraction.isMutationB());
                     }
                 }
                 edgesAndNodes.add(graphEdgeGroup);
