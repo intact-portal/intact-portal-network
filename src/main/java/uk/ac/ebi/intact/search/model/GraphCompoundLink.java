@@ -7,6 +7,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class GraphCompoundLink {
 
+    @JsonProperty("id")
+    private String id;
+
     @JsonProperty("source")
     private String source;
 
@@ -105,5 +108,13 @@ public class GraphCompoundLink {
 
     public void setDisruptedByMutation(boolean disruptedByMutation) {
         this.disruptedByMutation = disruptedByMutation;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

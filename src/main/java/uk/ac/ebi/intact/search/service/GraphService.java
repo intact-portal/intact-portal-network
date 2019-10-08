@@ -193,12 +193,14 @@ public class GraphService {
         List<Object> edgesAndNodes = new ArrayList<>();
         HashMap<String, GraphCompoundNode> interactorAcAndNodeMap = new HashMap<String, GraphCompoundNode>();
         HashSet<String> specieSet = new HashSet<>();
+        Integer interactionCounter = 1;
 
 
         for (SearchInteraction searchInteraction : interactions) {
             try {
                 GraphEdgeGroup graphEdgeGroup = new GraphEdgeGroup();
                 GraphCompoundLink graphLink = new GraphCompoundLink();
+                graphLink.setId(interactionCounter + "");
                 graphLink.setSource(searchInteraction.getInteractorAAc());
                 if (searchInteraction.getInteractorBAc() != null) {
                     graphLink.setTarget(searchInteraction.getInteractorBAc());
@@ -285,6 +287,7 @@ public class GraphService {
                 //TODO... Uncomment following
                 //throw e;
             }
+            interactionCounter++;
         }
         graphCompoundJson.setCompoundData(edgesAndNodes);
         return graphCompoundJson;
