@@ -214,6 +214,7 @@ public class GraphService {
                 graphLink.setCollapsedColor(GraphUtility.getColorForCollapsedEdge(searchInteraction.getIntactMiscore()));
                 graphLink.setShape(GraphUtility.getShapeForExpansionType(searchInteraction.getExpansionMethod()));
                 graphLink.setDisruptedByMutation(searchInteraction.isInteractionDisruptedByMutation());
+                graphLink.setMiScore(searchInteraction.getIntactMiscore());
                 graphEdgeGroup.setInteraction(graphLink);
 
                 if (searchInteraction.getInteractorAAc() != null) {

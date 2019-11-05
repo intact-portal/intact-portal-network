@@ -37,6 +37,9 @@ public class GraphCompoundLink {
     @JsonProperty("disrupted_by_mutation")
     private boolean disruptedByMutation;
 
+    @JsonProperty("mi_score")
+    private double miScore;
+
     public String getSource() {
         return source;
     }
@@ -116,5 +119,13 @@ public class GraphCompoundLink {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public double getMiScore() {
+        return miScore;
+    }
+
+    public void setMiScore(double miScore) {
+        this.miScore = miScore;
     }
 }
