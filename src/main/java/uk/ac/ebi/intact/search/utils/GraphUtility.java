@@ -389,9 +389,9 @@ public class GraphUtility {
 
         float inverse_blending = 1 - blending;
 
-        float red = start.getRed() * blending + end.getRed() * inverse_blending;
-        float green = start.getGreen() * blending + end.getGreen() * inverse_blending;
-        float blue = start.getBlue() * blending + end.getBlue() * inverse_blending;
+        float red = end.getRed() * blending + start.getRed() * inverse_blending;
+        float green = end.getGreen() * blending + start.getGreen() * inverse_blending;
+        float blue = end.getBlue() * blending + start.getBlue() * inverse_blending;
 
         //note that if i pass float values they have to be in the range of 0.0-1.0
         //and not in 0-255 like the ones i get returned by the getters.
