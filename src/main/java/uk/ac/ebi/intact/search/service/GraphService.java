@@ -200,7 +200,7 @@ public class GraphService {
             try {
                 GraphEdgeGroup graphEdgeGroup = new GraphEdgeGroup();
                 GraphCompoundLink graphLink = new GraphCompoundLink();
-                graphLink.setId(interactionCounter + "");
+                graphLink.setId(searchInteraction.getBinaryInteractionId());
                 graphLink.setSource(searchInteraction.getInteractorAAc());
                 if (searchInteraction.getInteractorBAc() != null) {
                     graphLink.setTarget(searchInteraction.getInteractorBAc());
