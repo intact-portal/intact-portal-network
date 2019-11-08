@@ -233,6 +233,7 @@ public class GraphService {
                             graphNode.setParent(parentTaxId);
                         }
                         graphNode.setInteractorId(searchInteraction.getMoleculeA());
+                        graphNode.setPreferredId(searchInteraction.getIdA());
                         graphNode.setInteractorType(searchInteraction.getTypeA());
                         graphNode.setPreferredId(searchInteraction.getUniqueIdA());
                         graphNode.setInteractorName(searchInteraction.getMoleculeA());
@@ -266,6 +267,7 @@ public class GraphService {
                             graphNode.setParent(parentTaxId);
                         }
                         graphNode.setInteractorId(searchInteraction.getMoleculeB());
+                        graphNode.setPreferredId(searchInteraction.getIdB());
                         graphNode.setInteractorType(searchInteraction.getTypeB());
                         graphNode.setPreferredId(searchInteraction.getUniqueIdB());
                         graphNode.setInteractorName(searchInteraction.getMoleculeB());
