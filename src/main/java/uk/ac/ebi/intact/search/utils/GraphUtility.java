@@ -399,4 +399,12 @@ public class GraphUtility {
         return "rgb(" + collapsedEdgeColor.getRed() + "," + collapsedEdgeColor.getGreen() + "," + collapsedEdgeColor.getBlue() + ")";
     }
 
+    public static String createNodeLabel(String preferredName, String preferredId, String interactorAc) {
+        if (preferredName != null) {
+            return preferredName + " (" + preferredId + ")";
+        } else {
+            return interactorAc;
+        }
+    }
+
 }
