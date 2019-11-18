@@ -43,6 +43,9 @@ public class GraphCompoundNode {
     @JsonProperty("mutation")
     private boolean mutation;
 
+    @JsonProperty("preferred_id_db")
+    private String preferredIdWithDB;
+
 
     public String getId() {
         return id;
@@ -138,5 +141,13 @@ public class GraphCompoundNode {
 
     public void setMutation(boolean mutation) {
         this.mutation = mutation;
+    }
+
+    public String getPreferredIdWithDB() {
+        return preferredIdWithDB;
+    }
+
+    public void setPreferredIdWithDB(String preferredIdWithDB) {
+        this.preferredIdWithDB = preferredIdWithDB;
     }
 }

@@ -234,6 +234,7 @@ public class GraphService {
                         }
                         graphNode.setInteractorId(GraphUtility.createNodeLabel(searchInteraction.getMoleculeA(), searchInteraction.getUniqueIdA(), searchInteraction.getInteractorAAc()));
                         graphNode.setPreferredId(searchInteraction.getIdA());
+                        graphNode.setPreferredIdWithDB(searchInteraction.getIdA());
                         graphNode.setInteractorType(searchInteraction.getTypeA());
                         graphNode.setPreferredId(searchInteraction.getUniqueIdA());
                         graphNode.setInteractorName(searchInteraction.getMoleculeA());
@@ -268,6 +269,7 @@ public class GraphService {
                         }
                         graphNode.setInteractorId(GraphUtility.createNodeLabel(searchInteraction.getMoleculeB(), searchInteraction.getUniqueIdB(), searchInteraction.getInteractorBAc()));
                         graphNode.setPreferredId(searchInteraction.getIdB());
+                        graphNode.setPreferredIdWithDB(searchInteraction.getIdB());
                         graphNode.setInteractorType(searchInteraction.getTypeB());
                         graphNode.setPreferredId(searchInteraction.getUniqueIdB());
                         graphNode.setInteractorName(searchInteraction.getMoleculeB());
