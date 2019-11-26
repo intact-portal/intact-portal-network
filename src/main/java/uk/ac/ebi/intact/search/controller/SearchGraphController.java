@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ebi.intact.search.interactions.service.InteractionSearchService;
 import uk.ac.ebi.intact.search.interactor.service.InteractorSearchService;
-import uk.ac.ebi.intact.search.model.GraphCompoundJson;
 import uk.ac.ebi.intact.search.model.GraphJson;
 import uk.ac.ebi.intact.search.service.GraphService;
 
@@ -36,7 +35,7 @@ public class SearchGraphController {
     }
 
     @CrossOrigin(origins = "*")
-    @RequestMapping(value = "/getGraphJson",
+    @RequestMapping(value = "/getJson",
             params = {
                     "query",
             },
@@ -52,36 +51,11 @@ public class SearchGraphController {
             @RequestParam(value = "minMiScore", defaultValue = "0", required = false) double minMiScore,
             @RequestParam(value = "maxMiScore", defaultValue = "1", required = false) double maxMiScore,
             @RequestParam(value = "interSpecies", required = false) boolean interSpecies,
-            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(value = "pageSize", defaultValue = Integer.MAX_VALUE + "", required = false) int pageSize) {
-
-        return this.graphService.getGraphJson(query, speciesFilter, interactorTypeFilter,
-                detectionMethodFilter, interactionTypeFilter, interactionHostOrganismFilter,
-                isNegativeFilter, minMiScore, maxMiScore, interSpecies, page, pageSize);
-    }
-
-    @CrossOrigin(origins = "*")
-    @RequestMapping(value = "/getGraphCompoundJson",
-            params = {
-                    "query",
-            },
-            method = RequestMethod.GET)
-    public GraphCompoundJson getGraphCompoundJson(
-            @RequestParam(value = "query") String query,
-            @RequestParam(value = "speciesFilter", required = false) Set<String> speciesFilter,
-            @RequestParam(value = "interactorTypeFilter", required = false) Set<String> interactorTypeFilter,
-            @RequestParam(value = "detectionMethodFilter", required = false) Set<String> detectionMethodFilter,
-            @RequestParam(value = "interactionTypeFilter", required = false) Set<String> interactionTypeFilter,
-            @RequestParam(value = "interactionHostOrganismFilter", required = false) Set<String> interactionHostOrganismFilter,
-            @RequestParam(value = "isNegativeFilter", required = false) boolean isNegativeFilter,
-            @RequestParam(value = "minMiScore", defaultValue = "0", required = false) double minMiScore,
-            @RequestParam(value = "maxMiScore", defaultValue = "1", required = false) double maxMiScore,
-            @RequestParam(value = "interSpecies", required = false) boolean interSpecies,
             @RequestParam(value = "isCompound", required = false) boolean isCompound,
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "pageSize", defaultValue = Integer.MAX_VALUE + "", required = false) int pageSize) {
 
-        return this.graphService.getGraphCompoundJson(query, speciesFilter, interactorTypeFilter,
+        return this.graphService.getGraphJson(query, speciesFilter, interactorTypeFilter,
                 detectionMethodFilter, interactionTypeFilter, interactionHostOrganismFilter,
                 isNegativeFilter, minMiScore, maxMiScore, interSpecies, isCompound, page, pageSize);
     }

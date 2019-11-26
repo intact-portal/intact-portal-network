@@ -1,14 +1,10 @@
 package uk.ac.ebi.intact.search.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Created by anjali on 17/05/19.
  */
-@JsonTypeName("data")
-@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 public class GraphNode {
 
     @JsonProperty("id")
@@ -35,11 +31,20 @@ public class GraphNode {
     @JsonProperty("preferred_id")
     private String preferredId;
 
+    @JsonProperty("parent")
+    private String parent;
+
     @JsonProperty("shape")
     private String shape;
 
     @JsonProperty("clusterID")
     private int clusterId;
+
+    @JsonProperty("mutation")
+    private boolean mutation;
+
+    @JsonProperty("preferred_id_db")
+    private String preferredIdWithDB;
 
 
     public String getId() {
@@ -106,12 +111,12 @@ public class GraphNode {
         this.preferredId = preferredId;
     }
 
-    public int getClusterId() {
-        return clusterId;
+    public String getParent() {
+        return parent;
     }
 
-    public void setClusterId(int clusterId) {
-        this.clusterId = clusterId;
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 
     public String getShape() {
@@ -120,5 +125,29 @@ public class GraphNode {
 
     public void setShape(String shape) {
         this.shape = shape;
+    }
+
+    public int getClusterId() {
+        return clusterId;
+    }
+
+    public void setClusterId(int clusterId) {
+        this.clusterId = clusterId;
+    }
+
+    public boolean isMutation() {
+        return mutation;
+    }
+
+    public void setMutation(boolean mutation) {
+        this.mutation = mutation;
+    }
+
+    public String getPreferredIdWithDB() {
+        return preferredIdWithDB;
+    }
+
+    public void setPreferredIdWithDB(String preferredIdWithDB) {
+        this.preferredIdWithDB = preferredIdWithDB;
     }
 }

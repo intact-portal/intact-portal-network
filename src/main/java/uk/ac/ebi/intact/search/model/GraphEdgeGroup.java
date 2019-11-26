@@ -8,17 +8,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class GraphEdgeGroup {
 
     @JsonProperty("data")
-    private GraphCompoundLink interaction;
+    private GraphLink interaction;
 
     @JsonProperty("group")
     private String group = "edges";
 
 
-    public GraphCompoundLink getInteraction() {
+    public GraphLink getInteraction() {
         return interaction;
     }
 
-    public void setInteraction(GraphCompoundLink interaction) {
+    public void setInteraction(GraphLink interaction) {
         this.interaction = interaction;
     }
 

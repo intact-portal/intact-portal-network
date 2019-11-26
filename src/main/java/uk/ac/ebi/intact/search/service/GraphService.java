@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.intact.search.interactions.model.SearchInteraction;
 import uk.ac.ebi.intact.search.interactions.service.InteractionSearchService;
-import uk.ac.ebi.intact.search.interactor.model.SearchInteractor;
 import uk.ac.ebi.intact.search.interactor.service.InteractorSearchService;
 import uk.ac.ebi.intact.search.model.*;
 import uk.ac.ebi.intact.search.utils.ColourCodes;
@@ -44,32 +43,6 @@ public class GraphService {
              double minMiScore,
              double maxMiScore,
              boolean interSpecies,
-             int page,
-             int pageSize) {
-
-        /*Page<SearchInteractor> interactors = this.interactorSearchService.findInteractorForGraphJson(query, speciesFilter, interactorTypeFilter,
-                detectionMethodFilter, interactionTypeFilter, interactionHostOrganism,
-                isNegativeFilter, minMiScore, maxMiScore, page, pageSize);*/
-
-        Page<SearchInteraction> interactions = this.interactionSearchService.findInteractionForGraphJson(query, speciesFilter, interactorTypeFilter, detectionMethodFilter,
-                interactionTypeFilter, interactionHostOrganism, isNegativeFilter, minMiScore, maxMiScore, interSpecies, page, pageSize);
-
-        // return toD3FormatAlternative(interactors.getContent(), interactions.getContent());
-
-        return toCytoscapeJsonFormat(interactions.getContent());
-    }
-
-    public GraphCompoundJson getGraphCompoundJson
-            (String query,
-             Set<String> speciesFilter,
-             Set<String> interactorTypeFilter,
-             Set<String> detectionMethodFilter,
-             Set<String> interactionTypeFilter,
-             Set<String> interactionHostOrganism,
-             boolean isNegativeFilter,
-             double minMiScore,
-             double maxMiScore,
-             boolean interSpecies,
              boolean isCompound,
              int page,
              int pageSize) {
@@ -83,115 +56,14 @@ public class GraphService {
 
         // return toD3FormatAlternative(interactors.getContent(), interactions.getContent());
 
-        return toCytoscapeCompoundJson(interactions.getContent(), isCompound);
+        return toCytoscapeJsonFormat(interactions.getContent(), isCompound);
     }
 
-    private GraphJson toD3Format(List<SearchInteractor> interactors, List<SearchInteraction> interactions) {
-        GraphJson graphJson = new GraphJson();
-        List<GraphNode> graphNodes = new ArrayList<>();
-        List<GraphLink> graphLinks = new ArrayList<>();
 
-        for (SearchInteractor searchInteractor : interactors) {
-            GraphNode graphNode = new GraphNode();
-            graphNode.setId(searchInteractor.getInteractorId());
-            graphNode.setSpeciesName(searchInteractor.getSpecies());
-            graphNode.setTaxId(searchInteractor.getTaxId());
-            graphNode.setColor("rgb(255,0,0)");
-            graphNodes.add(graphNode);
-        }
-
-        for (SearchInteraction searchInteraction : interactions) {
-            GraphLink graphLink = new GraphLink();
-            graphLink.setSource(searchInteraction.getInteractorAAc());
-            graphLink.setTarget(searchInteraction.getInteractorBAc());
-            graphLinks.add(graphLink);
-        }
-
-        graphJson.setInteractions(graphLinks);
-        graphJson.setInteractors(graphNodes);
-
-        return graphJson;
-    }
-
-    /*
-    * Delete this code when not needed
-    *
-    * */
-    private GraphJson toCytoscapeJsonFormat(List<SearchInteraction> interactions) {
-        GraphJson graphJson = new GraphJson();
-        List<GraphNode> graphNodes = new ArrayList<>();
-        List<GraphLink> graphLinks = new ArrayList<>();
-        HashSet<String> interactorSet = new HashSet<>();
-
-
-        for (SearchInteraction searchInteraction : interactions) {
-            try {
-                GraphLink graphLink = new GraphLink();
-                graphLink.setSource(searchInteraction.getInteractorAAc());
-                if (searchInteraction.getInteractorBAc() != null) {
-                    graphLink.setTarget(searchInteraction.getInteractorBAc());
-                } else {
-                    graphLink.setTarget(graphLink.getSource());
-                }
-                graphLink.setInteractionAc(searchInteraction.getInteractionAc());
-                graphLink.setInteractionType(searchInteraction.getInteractionType());
-                graphLink.setInteractionDetectionMethod(searchInteraction.getInteractionDetectionMethod());
-                graphLink.setColor(GraphUtility.getColorForInteractionType(searchInteraction.getInteractionType()));
-
-                if (!interactorSet.contains(searchInteraction.getInteractorAAc())) {
-                    GraphNode graphNode = new GraphNode();
-                    graphNode.setId(searchInteraction.getInteractorAAc());
-                    graphNode.setSpeciesName(searchInteraction.getSpeciesA());
-                    graphNode.setTaxId(searchInteraction.getTaxIdA());
-                    graphNode.setInteractorId(searchInteraction.getMoleculeA());
-                    graphNode.setInteractorType(searchInteraction.getTypeA());
-                    graphNode.setPreferredId(searchInteraction.getUniqueIdA());
-                    graphNode.setInteractorName(searchInteraction.getMoleculeA());
-                    graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdA()));
-                    graphNode.setShape(GraphUtility.getShapeForInteractorType(searchInteraction.getTypeMIA()));
-                    graphNode.setClusterId(searchInteraction.getTaxIdA());
-                    graphNodes.add(graphNode);
-                    interactorSet.add(searchInteraction.getInteractorAAc());
-                }
-
-                if (searchInteraction.getInteractorBAc() != null) {
-                    if (!interactorSet.contains(searchInteraction.getInteractorBAc())) {
-                        GraphNode graphNode = new GraphNode();
-                        graphNode.setId(searchInteraction.getInteractorBAc());
-                        graphNode.setSpeciesName(searchInteraction.getSpeciesB());
-                        graphNode.setTaxId(searchInteraction.getTaxIdB());
-                        graphNode.setInteractorId(searchInteraction.getMoleculeB());
-                        graphNode.setInteractorType(searchInteraction.getTypeB());
-                        graphNode.setPreferredId(searchInteraction.getUniqueIdB());
-                        graphNode.setInteractorName(searchInteraction.getMoleculeB());
-                        graphNode.setColor(GraphUtility.getColorForTaxId(searchInteraction.getTaxIdB()));
-                        graphNode.setShape(GraphUtility.getShapeForInteractorType(searchInteraction.getTypeMIB()));
-                        graphNode.setClusterId(searchInteraction.getTaxIdB());
-                        graphNodes.add(graphNode);
-                        interactorSet.add(searchInteraction.getInteractorBAc());
-                    }
-                }
-
-                graphLinks.add(graphLink);
-            } catch (Exception e) {
-                log.info("Interaction with id: " + searchInteraction.getInteractionAc() + "failed to process" +
-                        "and therefore this interaction will not be in graph json");
-                //TODO... Uncomment following
-                //throw e;
-            }
-        }
-
-
-        graphJson.setInteractions(graphLinks);
-        graphJson.setInteractors(graphNodes);
-
-        return graphJson;
-    }
-
-    private GraphCompoundJson toCytoscapeCompoundJson(List<SearchInteraction> interactions, boolean isCompound) {
-        GraphCompoundJson graphCompoundJson = new GraphCompoundJson();
+    private GraphJson toCytoscapeJsonFormat(List<SearchInteraction> interactions, boolean isCompound) {
+        GraphJson graphCompoundJson = new GraphJson();
         List<Object> edgesAndNodes = new ArrayList<>();
-        HashMap<String, GraphCompoundNode> interactorAcAndNodeMap = new HashMap<String, GraphCompoundNode>();
+        HashMap<String, GraphNode> interactorAcAndNodeMap = new HashMap<String, GraphNode>();
         HashSet<String> specieSet = new HashSet<>();
         Integer interactionCounter = 1;
 
@@ -199,7 +71,7 @@ public class GraphService {
         for (SearchInteraction searchInteraction : interactions) {
             try {
                 GraphEdgeGroup graphEdgeGroup = new GraphEdgeGroup();
-                GraphCompoundLink graphLink = new GraphCompoundLink();
+                GraphLink graphLink = new GraphLink();
                 graphLink.setId(searchInteraction.getBinaryInteractionId());
                 graphLink.setSource(searchInteraction.getInteractorAAc());
                 if (searchInteraction.getInteractorBAc() != null) {
@@ -219,7 +91,7 @@ public class GraphService {
 
                 if (searchInteraction.getInteractorAAc() != null) {
                     if (!interactorAcAndNodeMap.keySet().contains(searchInteraction.getInteractorAAc())) {
-                        GraphCompoundNode graphNode = new GraphCompoundNode();
+                        GraphNode graphNode = new GraphNode();
                         GraphNodeGroup graphNodeGroup = new GraphNodeGroup();
                         String parentTaxId = searchInteraction.getTaxIdA() + "";
                         graphNode.setId(searchInteraction.getInteractorAAc());
@@ -247,14 +119,14 @@ public class GraphService {
                         interactorAcAndNodeMap.put(searchInteraction.getInteractorAAc(), graphNode);
                         edgesAndNodes.add(graphNodeGroup);
                     } else if (searchInteraction.isMutationA()) {
-                        GraphCompoundNode existingGraphNode = interactorAcAndNodeMap.get(searchInteraction.getInteractorAAc());
+                        GraphNode existingGraphNode = interactorAcAndNodeMap.get(searchInteraction.getInteractorAAc());
                         existingGraphNode.setMutation(searchInteraction.isMutationA());
                     }
                 }
 
                 if (searchInteraction.getInteractorBAc() != null) {
                     if (!interactorAcAndNodeMap.keySet().contains(searchInteraction.getInteractorBAc())) {
-                        GraphCompoundNode graphNode = new GraphCompoundNode();
+                        GraphNode graphNode = new GraphNode();
                         GraphNodeGroup graphNodeGroup = new GraphNodeGroup();
                         String parentTaxId = searchInteraction.getTaxIdB() + "";
                         graphNode.setId(searchInteraction.getInteractorBAc());
@@ -281,7 +153,7 @@ public class GraphService {
                         interactorAcAndNodeMap.put(searchInteraction.getInteractorBAc(), graphNode);
                         edgesAndNodes.add(graphNodeGroup);
                     } else if (searchInteraction.isMutationB()) {
-                        GraphCompoundNode existingGraphNode = interactorAcAndNodeMap.get(searchInteraction.getInteractorBAc());
+                        GraphNode existingGraphNode = interactorAcAndNodeMap.get(searchInteraction.getInteractorBAc());
                         existingGraphNode.setMutation(searchInteraction.isMutationB());
                     }
                 }
@@ -299,7 +171,7 @@ public class GraphService {
     }
 
     public GraphNodeGroup createMetaNode(String parentTaxId, String species) {
-        GraphCompoundNode graphCompoundNode = new GraphCompoundNode();
+        GraphNode graphCompoundNode = new GraphNode();
         GraphNodeGroup graphCompoundNodeGroup = new GraphNodeGroup();
         graphCompoundNode.setId(parentTaxId);
         graphCompoundNode.setColor(ColourCodes.META_NODE);

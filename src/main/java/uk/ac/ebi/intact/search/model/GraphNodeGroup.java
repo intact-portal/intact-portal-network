@@ -8,17 +8,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class GraphNodeGroup {
 
     @JsonProperty("data")
-    private GraphCompoundNode interactor;
+    private GraphNode interactor;
 
     @JsonProperty("group")
     private String group = "nodes";
 
 
-    public GraphCompoundNode getInteractor() {
+    public GraphNode getInteractor() {
         return interactor;
     }
 
-    public void setInteractor(GraphCompoundNode interactor) {
+    public void setInteractor(GraphNode interactor) {
         this.interactor = interactor;
     }
 
