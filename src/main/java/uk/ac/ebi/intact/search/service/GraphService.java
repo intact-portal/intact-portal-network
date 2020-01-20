@@ -79,13 +79,13 @@ public class GraphService {
                 } else {
                     graphLink.setTarget(graphLink.getSource());
                 }
-                graphLink.setInteractionAc(searchInteraction.getInteractionAc());
-                graphLink.setInteractionType(searchInteraction.getInteractionType());
-                graphLink.setInteractionDetectionMethod(searchInteraction.getInteractionDetectionMethod());
-                graphLink.setColor(GraphUtility.getColorForInteractionType(searchInteraction.getInteractionTypeMIIdentifier()));
+                graphLink.setInteractionAc(searchInteraction.getAc());
+                graphLink.setInteractionType(searchInteraction.getType());
+                graphLink.setInteractionDetectionMethod(searchInteraction.getDetectionMethod());
+                graphLink.setColor(GraphUtility.getColorForInteractionType(searchInteraction.getTypeMIIdentifier()));
                 graphLink.setCollapsedColor(GraphUtility.getColorForCollapsedEdge(searchInteraction.getIntactMiscore()));
                 graphLink.setShape(GraphUtility.getShapeForExpansionType(searchInteraction.getExpansionMethod()));
-                graphLink.setDisruptedByMutation(searchInteraction.isInteractionDisruptedByMutation());
+                graphLink.setDisruptedByMutation(searchInteraction.isDisruptedByMutation());
                 graphLink.setMiScore(searchInteraction.getIntactMiscore());
                 graphEdgeGroup.setInteraction(graphLink);
 
@@ -159,7 +159,7 @@ public class GraphService {
                 }
                 edgesAndNodes.add(graphEdgeGroup);
             } catch (Exception e) {
-                log.info("Interaction with id: " + searchInteraction.getInteractionAc() + "failed to process" +
+                log.info("Interaction with id: " + searchInteraction.getAc() + "failed to process" +
                         "and therefore this interaction will not be in graph json");
                 //TODO... Uncomment following
                 //throw e;
