@@ -73,9 +73,9 @@ public class GraphService {
                 GraphEdgeGroup graphEdgeGroup = new GraphEdgeGroup();
                 GraphLink graphLink = new GraphLink();
                 graphLink.setId(searchInteraction.getBinaryInteractionId());
-                graphLink.setSource(searchInteraction.getInteractorAAc());
-                if (searchInteraction.getInteractorBAc() != null) {
-                    graphLink.setTarget(searchInteraction.getInteractorBAc());
+                graphLink.setSource(searchInteraction.getAcA());
+                if (searchInteraction.getAcB() != null) {
+                    graphLink.setTarget(searchInteraction.getAcB());
                 } else {
                     graphLink.setTarget(graphLink.getSource());
                 }
@@ -89,12 +89,12 @@ public class GraphService {
                 graphLink.setMiScore(searchInteraction.getIntactMiscore());
                 graphEdgeGroup.setInteraction(graphLink);
 
-                if (searchInteraction.getInteractorAAc() != null) {
-                    if (!interactorAcAndNodeMap.keySet().contains(searchInteraction.getInteractorAAc())) {
+                if (searchInteraction.getAcA() != null) {
+                    if (!interactorAcAndNodeMap.keySet().contains(searchInteraction.getAcA())) {
                         GraphNode graphNode = new GraphNode();
                         GraphNodeGroup graphNodeGroup = new GraphNodeGroup();
                         String parentTaxId = searchInteraction.getTaxIdA() + "";
-                        graphNode.setId(searchInteraction.getInteractorAAc());
+                        graphNode.setId(searchInteraction.getAcA());
                         graphNode.setSpeciesName(searchInteraction.getSpeciesA());
                         graphNode.setTaxId(searchInteraction.getTaxIdA());
                         if (isCompound) {
@@ -104,7 +104,7 @@ public class GraphService {
                             }
                             graphNode.setParent(parentTaxId);
                         }
-                        graphNode.setInteractorId(GraphUtility.createNodeLabel(searchInteraction.getMoleculeA(), searchInteraction.getUniqueIdA(), searchInteraction.getInteractorAAc()));
+                        graphNode.setInteractorId(GraphUtility.createNodeLabel(searchInteraction.getMoleculeA(), searchInteraction.getUniqueIdA(), searchInteraction.getAcA()));
                         graphNode.setPreferredId(searchInteraction.getIdA());
                         graphNode.setPreferredIdWithDB(searchInteraction.getIdA());
                         graphNode.setInteractorType(searchInteraction.getTypeA());
@@ -116,20 +116,20 @@ public class GraphService {
                         graphNode.setMutation(searchInteraction.isMutationA());
                         graphNodeGroup.setInteractor(graphNode);
 
-                        interactorAcAndNodeMap.put(searchInteraction.getInteractorAAc(), graphNode);
+                        interactorAcAndNodeMap.put(searchInteraction.getAcA(), graphNode);
                         edgesAndNodes.add(graphNodeGroup);
                     } else if (searchInteraction.isMutationA()) {
-                        GraphNode existingGraphNode = interactorAcAndNodeMap.get(searchInteraction.getInteractorAAc());
+                        GraphNode existingGraphNode = interactorAcAndNodeMap.get(searchInteraction.getAcA());
                         existingGraphNode.setMutation(searchInteraction.isMutationA());
                     }
                 }
 
-                if (searchInteraction.getInteractorBAc() != null) {
-                    if (!interactorAcAndNodeMap.keySet().contains(searchInteraction.getInteractorBAc())) {
+                if (searchInteraction.getAcB() != null) {
+                    if (!interactorAcAndNodeMap.keySet().contains(searchInteraction.getAcB())) {
                         GraphNode graphNode = new GraphNode();
                         GraphNodeGroup graphNodeGroup = new GraphNodeGroup();
                         String parentTaxId = searchInteraction.getTaxIdB() + "";
-                        graphNode.setId(searchInteraction.getInteractorBAc());
+                        graphNode.setId(searchInteraction.getAcB());
                         graphNode.setSpeciesName(searchInteraction.getSpeciesB());
                         graphNode.setTaxId(searchInteraction.getTaxIdB());
                         if (isCompound) {
@@ -139,7 +139,7 @@ public class GraphService {
                             }
                             graphNode.setParent(parentTaxId);
                         }
-                        graphNode.setInteractorId(GraphUtility.createNodeLabel(searchInteraction.getMoleculeB(), searchInteraction.getUniqueIdB(), searchInteraction.getInteractorBAc()));
+                        graphNode.setInteractorId(GraphUtility.createNodeLabel(searchInteraction.getMoleculeB(), searchInteraction.getUniqueIdB(), searchInteraction.getAcB()));
                         graphNode.setPreferredId(searchInteraction.getIdB());
                         graphNode.setPreferredIdWithDB(searchInteraction.getIdB());
                         graphNode.setInteractorType(searchInteraction.getTypeB());
@@ -150,10 +150,10 @@ public class GraphService {
                         graphNode.setClusterId(searchInteraction.getTaxIdB());
                         graphNode.setMutation(searchInteraction.isMutationB());
                         graphNodeGroup.setInteractor(graphNode);
-                        interactorAcAndNodeMap.put(searchInteraction.getInteractorBAc(), graphNode);
+                        interactorAcAndNodeMap.put(searchInteraction.getAcB(), graphNode);
                         edgesAndNodes.add(graphNodeGroup);
                     } else if (searchInteraction.isMutationB()) {
-                        GraphNode existingGraphNode = interactorAcAndNodeMap.get(searchInteraction.getInteractorBAc());
+                        GraphNode existingGraphNode = interactorAcAndNodeMap.get(searchInteraction.getAcB());
                         existingGraphNode.setMutation(searchInteraction.isMutationB());
                     }
                 }
