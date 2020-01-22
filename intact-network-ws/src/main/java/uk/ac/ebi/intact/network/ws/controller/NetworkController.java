@@ -12,34 +12,30 @@ import uk.ac.ebi.intact.search.interactions.service.InteractionSearchService;
 
 import java.util.*;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 /**
  * @author Elisabet Barrera
  */
 
 @RestController
-@RequestMapping("/network")
-public class SearchGraphController {
+public class NetworkController {
 
-    private static final Log log = LogFactory.getLog(SearchGraphController.class);
+    private static final Log log = LogFactory.getLog(NetworkController.class);
 
     private InteractionSearchService interactionSearchService;
 
     @Autowired
-    public SearchGraphController(InteractionSearchService interactionSearchService) {
+    public NetworkController(InteractionSearchService interactionSearchService) {
         this.interactionSearchService = interactionSearchService;
     }
 
-    @RequestMapping("/")
-    public String SpringBootSolrExample() {
-        return "Welcome to Spring Boot solr Example";
-    }
-
     @CrossOrigin(origins = "*")
-    @RequestMapping(value = "/getJson",
+    @GetMapping(value = "/getInteractions",
             params = {
-                    "query",
+                "query"
             },
-            method = RequestMethod.GET)
+            produces = {APPLICATION_JSON_VALUE})
     public NetworkJson getGraphJson(
             @RequestParam(value = "query") String query,
             @RequestParam(value = "speciesFilter", required = false) Set<String> speciesFilter,

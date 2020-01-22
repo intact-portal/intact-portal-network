@@ -10,10 +10,13 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.solr.core.SolrOperations;
 import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.repository.config.EnableSolrRepositories;
 
 import static uk.ac.ebi.intact.network.ws.controller.utils.NetworkUtility.*;
 
-@SpringBootApplication(scanBasePackages = "uk.ac.ebi.intact.*")
+@EnableSolrRepositories(basePackages = "uk.ac.ebi.intact.search",
+        schemaCreationSupport = true)
+@SpringBootApplication(scanBasePackages = "uk.ac.ebi.intact")
 public class NetworkServiceApplication extends SpringBootServletInitializer {
 
     @Value("${spring.data.solr.host}")
@@ -25,12 +28,12 @@ public class NetworkServiceApplication extends SpringBootServletInitializer {
         return application.sources(NetworkServiceApplication.class);
     }
 
-    @Bean("networkSolrClient")
+    @Bean
     public SolrClient solrClient() {
         return new HttpSolrClient.Builder(solrHost).build();
     }
 
-    @Bean("networkSolrTemplate")
+    @Bean
     public SolrOperations solrTemplate() {
         return new SolrTemplate(solrClient());
     }
