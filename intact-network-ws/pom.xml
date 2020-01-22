@@ -27,9 +27,9 @@
         </dependency>
 
         <dependency>
-            <groupId>uk.ac.ebi.intact.network</groupId>
-            <artifactId>intact-network-service</artifactId>
-            <version>${project.parent.version}</version>
+            <groupId>uk.ac.ebi.intact.search.interactions</groupId>
+            <artifactId>intact-search-interactions-service</artifactId>
+            <version>${intact.search.interactions.version}</version>
         </dependency>
 
         <!-- Swagger documentation dependencies -->
@@ -58,6 +58,13 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -8,7 +8,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>IntAct Portal :: Network Visualization Service Module</name>
+    <name>IntAct Portal :: Network Visualization Parent Module</name>
     <description>Module to feed data for the IntAct Network Visualization Component</description>
 
     <parent>
@@ -23,12 +23,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <intact.search.interactions.version>1.0.1-SNAPSHOT</intact.search.interactions.version>
-        <intact.search.interactors.version>1.0.0-SNAPSHOT</intact.search.interactors.version>
     </properties>
 
     <modules>
         <module>intact-network-ws</module>
-        <module>intact-network-service</module>
     </modules>
 
     <scm>
