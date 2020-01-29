@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.network.ws.controller.result;
+package uk.ac.ebi.intact.network.ws.controller.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
