@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import uk.ac.ebi.intact.network.ws.controller.result.*;
+import uk.ac.ebi.intact.network.ws.controller.model.*;
 import uk.ac.ebi.intact.network.ws.controller.utils.*;
 import uk.ac.ebi.intact.search.interactions.model.SearchInteraction;
 import uk.ac.ebi.intact.search.interactions.service.InteractionSearchService;
@@ -62,36 +62,34 @@ public class NetworkController {
         List<Object> edgesAndNodes = new ArrayList<>();
         HashMap<String, NetworkNode> interactorAcAndNodeMap = new HashMap<String, NetworkNode>();
         HashSet<String> specieSet = new HashSet<>();
-        Integer interactionCounter = 1;
-
 
         for (SearchInteraction searchInteraction : interactions) {
             try {
                 NetworkEdgeGroup networkEdgeGroup = new NetworkEdgeGroup();
                 NetworkLink networkLink = new NetworkLink();
                 networkLink.setId(searchInteraction.getBinaryInteractionId());
-                networkLink.setSource(searchInteraction.getInteractorAAc());
-                if (searchInteraction.getInteractorBAc() != null) {
-                    networkLink.setTarget(searchInteraction.getInteractorBAc());
+                networkLink.setSource(searchInteraction.getAcA());
+                if (searchInteraction.getAcB() != null) {
+                    networkLink.setTarget(searchInteraction.getAcB());
                 } else {
                     networkLink.setTarget(networkLink.getSource());
                 }
-                networkLink.setInteractionAc(searchInteraction.getInteractionAc());
-                networkLink.setInteractionType(searchInteraction.getInteractionType());
-                networkLink.setInteractionDetectionMethod(searchInteraction.getInteractionDetectionMethod());
-                networkLink.setColor(NetworkUtility.getColorForInteractionType(searchInteraction.getInteractionTypeMIIdentifier()));
+                networkLink.setInteractionAc(searchInteraction.getAc());
+                networkLink.setInteractionType(searchInteraction.getType());
+                networkLink.setInteractionDetectionMethod(searchInteraction.getDetectionMethod());
+                networkLink.setColor(NetworkUtility.getColorForInteractionType(searchInteraction.getTypeMIIdentifier()));
                 networkLink.setCollapsedColor(NetworkUtility.getColorForCollapsedEdge(searchInteraction.getIntactMiscore()));
                 networkLink.setShape(NetworkUtility.getShapeForExpansionType(searchInteraction.getExpansionMethod()));
-                networkLink.setDisruptedByMutation(searchInteraction.isInteractionDisruptedByMutation());
+                networkLink.setDisruptedByMutation(searchInteraction.isDisruptedByMutation());
                 networkLink.setMiScore(searchInteraction.getIntactMiscore());
                 networkEdgeGroup.setInteraction(networkLink);
 
-                if (searchInteraction.getInteractorAAc() != null) {
-                    if (!interactorAcAndNodeMap.keySet().contains(searchInteraction.getInteractorAAc())) {
+                if (searchInteraction.getAcA() != null) {
+                    if (!interactorAcAndNodeMap.containsKey(searchInteraction.getAcA())) {
                         NetworkNode networkNode = new NetworkNode();
                         NetworkNodeGroup networkNodeGroup = new NetworkNodeGroup();
                         String parentTaxId = searchInteraction.getTaxIdA() + "";
-                        networkNode.setId(searchInteraction.getInteractorAAc());
+                        networkNode.setId(searchInteraction.getAcA());
                         networkNode.setSpeciesName(searchInteraction.getSpeciesA());
                         networkNode.setTaxId(searchInteraction.getTaxIdA());
                         if (isCompound) {
@@ -101,7 +99,8 @@ public class NetworkController {
                             }
                             networkNode.setParent(parentTaxId);
                         }
-                        networkNode.setInteractorId(NetworkUtility.createNodeLabel(searchInteraction.getMoleculeA(), searchInteraction.getUniqueIdA(), searchInteraction.getInteractorAAc()));
+                        networkNode.setInteractorId(NetworkUtility.createNodeLabel(searchInteraction.getMoleculeA(),
+                                searchInteraction.getUniqueIdA(), searchInteraction.getAcA()));
                         networkNode.setPreferredId(searchInteraction.getIdA());
                         networkNode.setPreferredIdWithDB(searchInteraction.getIdA());
                         networkNode.setInteractorType(searchInteraction.getTypeA());
@@ -113,20 +112,20 @@ public class NetworkController {
                         networkNode.setMutation(searchInteraction.isMutationA());
                         networkNodeGroup.setInteractor(networkNode);
 
-                        interactorAcAndNodeMap.put(searchInteraction.getInteractorAAc(), networkNode);
+                        interactorAcAndNodeMap.put(searchInteraction.getAcA(), networkNode);
                         edgesAndNodes.add(networkNodeGroup);
                     } else if (searchInteraction.isMutationA()) {
-                        NetworkNode existingNetworkNode = interactorAcAndNodeMap.get(searchInteraction.getInteractorAAc());
+                        NetworkNode existingNetworkNode = interactorAcAndNodeMap.get(searchInteraction.getAcA());
                         existingNetworkNode.setMutation(searchInteraction.isMutationA());
                     }
                 }
 
-                if (searchInteraction.getInteractorBAc() != null) {
-                    if (!interactorAcAndNodeMap.keySet().contains(searchInteraction.getInteractorBAc())) {
+                if (searchInteraction.getAcB() != null) {
+                    if (!interactorAcAndNodeMap.keySet().contains(searchInteraction.getAcB())) {
                         NetworkNode networkNode = new NetworkNode();
                         NetworkNodeGroup networkNodeGroup = new NetworkNodeGroup();
                         String parentTaxId = searchInteraction.getTaxIdB() + "";
-                        networkNode.setId(searchInteraction.getInteractorBAc());
+                        networkNode.setId(searchInteraction.getAcB());
                         networkNode.setSpeciesName(searchInteraction.getSpeciesB());
                         networkNode.setTaxId(searchInteraction.getTaxIdB());
                         if (isCompound) {
@@ -136,7 +135,8 @@ public class NetworkController {
                             }
                             networkNode.setParent(parentTaxId);
                         }
-                        networkNode.setInteractorId(NetworkUtility.createNodeLabel(searchInteraction.getMoleculeB(), searchInteraction.getUniqueIdB(), searchInteraction.getInteractorBAc()));
+                        networkNode.setInteractorId(NetworkUtility.createNodeLabel(searchInteraction.getMoleculeB(),
+                                searchInteraction.getUniqueIdB(), searchInteraction.getAcB()));
                         networkNode.setPreferredId(searchInteraction.getIdB());
                         networkNode.setPreferredIdWithDB(searchInteraction.getIdB());
                         networkNode.setInteractorType(searchInteraction.getTypeB());
@@ -147,22 +147,22 @@ public class NetworkController {
                         networkNode.setClusterId(searchInteraction.getTaxIdB());
                         networkNode.setMutation(searchInteraction.isMutationB());
                         networkNodeGroup.setInteractor(networkNode);
-                        interactorAcAndNodeMap.put(searchInteraction.getInteractorBAc(), networkNode);
+                        interactorAcAndNodeMap.put(searchInteraction.getAcB(), networkNode);
                         edgesAndNodes.add(networkNodeGroup);
                     } else if (searchInteraction.isMutationB()) {
-                        NetworkNode existingNetworkNode = interactorAcAndNodeMap.get(searchInteraction.getInteractorBAc());
+                        NetworkNode existingNetworkNode = interactorAcAndNodeMap.get(searchInteraction.getAcB());
                         existingNetworkNode.setMutation(searchInteraction.isMutationB());
                     }
                 }
                 edgesAndNodes.add(networkEdgeGroup);
             } catch (Exception e) {
-                log.info("Interaction with id: " + searchInteraction.getInteractionAc() + "failed to process" +
+                log.info("Interaction with id: " + searchInteraction.getAcB() + "failed to process" +
                         "and therefore this interaction will not be in graph json");
                 //TODO... Uncomment following
                 //throw e;
             }
-            interactionCounter++;
         }
+
         graphCompoundJson.setCompoundData(edgesAndNodes);
         return graphCompoundJson;
     }
