@@ -3,28 +3,31 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>uk.ac.ebi.intact.search</groupId>
-    <artifactId>intact-search-graph</artifactId>
+    <groupId>uk.ac.ebi.intact.network</groupId>
+    <artifactId>intact-network-module</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
-    <name>intact-search-graph</name>
-    <description>SpringBoot with spring data interactor solr</description>
+    <name>IntAct Portal :: Network Visualization Module</name>
+    <description>Module to feed data for the IntAct Network Visualization Component</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.2.RELEASE</version>
+        <version>2.1.0.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <properties>
+        <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
-        <intact.search.interactions.version>1.0.2-SNAPSHOT</intact.search.interactions.version>
-        <intact.search.interactor.version>1.0.2-SNAPSHOT</intact.search.interactor.version>
+        <intact.search.interactions.version>1.0.1-SNAPSHOT</intact.search.interactions.version>
     </properties>
+
+    <modules>
+        <module>intact-network-ws</module>
+    </modules>
 
     <scm>
         <connection>scm:git:https://github.com/EBI-IntAct/intact-search-graph.git</connection>
@@ -33,61 +36,8 @@
         <tag>HEAD</tag>
     </scm>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-solr</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <!--Micro Web Services-->
-
-        <dependency>
-            <groupId>uk.ac.ebi.intact.search</groupId>
-            <artifactId>intact-search-interactions</artifactId>
-            <version>${intact.search.interactions.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>uk.ac.ebi.intact.search</groupId>
-            <artifactId>intact-search-interactors</artifactId>
-            <version>${intact.search.interactor.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
-            <!--<plugin>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-maven-plugin</artifactId>-->
-            <!--</plugin>-->
             <plugin>
                 <groupId>external.atlassian.jgitflow</groupId>
                 <artifactId>jgitflow-maven-plugin</artifactId>
