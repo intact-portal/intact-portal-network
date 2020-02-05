@@ -38,11 +38,11 @@ public class NetworkController {
             produces = {APPLICATION_JSON_VALUE})
     public NetworkJson getGraphJson(
             @RequestParam(value = "query") String query,
-            @RequestParam(value = "speciesFilter", required = false) Set<String> speciesFilter,
+            @RequestParam(value = "interactorSpeciesFilter", required = false) Set<String> interactorSpeciesFilter,
             @RequestParam(value = "interactorTypeFilter", required = false) Set<String> interactorTypeFilter,
-            @RequestParam(value = "detectionMethodFilter", required = false) Set<String> detectionMethodFilter,
+            @RequestParam(value = "interactionDetectionMethodFilter", required = false) Set<String> interactionDetectionMethodFilter,
             @RequestParam(value = "interactionTypeFilter", required = false) Set<String> interactionTypeFilter,
-            @RequestParam(value = "hostOrganismFilter", required = false) Set<String> hostOrganismFilter,
+            @RequestParam(value = "interactionHostOrganismFilter", required = false) Set<String> interactionHostOrganismFilter,
             @RequestParam(value = "isNegativeFilter", required = false) boolean isNegativeFilter,
             @RequestParam(value = "minMiScore", defaultValue = "0", required = false) double minMiScore,
             @RequestParam(value = "maxMiScore", defaultValue = "1", required = false) double maxMiScore,
@@ -51,8 +51,8 @@ public class NetworkController {
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "pageSize", defaultValue = Integer.MAX_VALUE + "", required = false) int pageSize) {
 
-        Page<SearchInteraction> interactions = interactionSearchService.findInteractionForGraphJson(query, speciesFilter, interactorTypeFilter, detectionMethodFilter,
-                interactionTypeFilter, hostOrganismFilter, isNegativeFilter, minMiScore, maxMiScore, interSpecies, page, pageSize);
+        Page<SearchInteraction> interactions = interactionSearchService.findInteractionForGraphJson(query, interactorSpeciesFilter, interactorTypeFilter, interactionDetectionMethodFilter,
+                interactionTypeFilter, interactionHostOrganismFilter, isNegativeFilter, minMiScore, maxMiScore, interSpecies, page, pageSize);
 
         return toCytoscapeJsonFormat(interactions.getContent(), isCompound);
     }
