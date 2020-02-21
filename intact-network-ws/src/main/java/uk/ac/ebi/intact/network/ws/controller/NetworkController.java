@@ -80,7 +80,7 @@ public class NetworkController {
                 networkLink.setColor(NetworkUtility.getColorForInteractionType(searchInteraction.getTypeMIIdentifier()));
                 networkLink.setCollapsedColor(NetworkUtility.getColorForCollapsedEdge(searchInteraction.getIntactMiscore()));
                 networkLink.setShape(NetworkUtility.getShapeForExpansionType(searchInteraction.getExpansionMethod()));
-                networkLink.setDisruptedByMutation(searchInteraction.isDisruptedByMutation());
+                networkLink.setAffectedByMutation(searchInteraction.isDisruptedByMutation());
                 networkLink.setMiScore(searchInteraction.getIntactMiscore());
                 networkEdgeGroup.setInteraction(networkLink);
 

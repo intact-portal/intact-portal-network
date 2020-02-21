@@ -34,8 +34,8 @@ public class NetworkLink {
     @JsonProperty("collapsed_color")
     private String collapsedColor;
 
-    @JsonProperty("disrupted_by_mutation")
-    private boolean disruptedByMutation;
+    @JsonProperty("affected_by_mutation")
+    private boolean affectedByMutation;
 
     @JsonProperty("mi_score")
     private double miScore;
@@ -105,12 +105,12 @@ public class NetworkLink {
         this.collapsedColor = collapsedColor;
     }
 
-    public boolean isDisruptedByMutation() {
-        return disruptedByMutation;
+    public boolean isAffectedByMutation() {
+        return affectedByMutation;
     }
 
-    public void setDisruptedByMutation(boolean disruptedByMutation) {
-        this.disruptedByMutation = disruptedByMutation;
+    public void setAffectedByMutation(boolean affectedByMutation) {
+        this.affectedByMutation = affectedByMutation;
     }
 
     public int getId() {
