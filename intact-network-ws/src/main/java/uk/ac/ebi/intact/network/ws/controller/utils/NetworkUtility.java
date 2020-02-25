@@ -399,6 +399,12 @@ public class NetworkUtility {
         return "rgb(" + collapsedEdgeColor.getRed() + "," + collapsedEdgeColor.getGreen() + "," + collapsedEdgeColor.getBlue() + ")";
     }
 
+    public static String getColorForCollapsedEdgeDiscrete(double miScore) {
+
+        int miScoreFloor = (int) Math.floor(miScore*10);
+        return EdgeColor.YELLOW_ORANGE_BROWN_PALETTE[miScoreFloor];
+    }
+
     public static String createNodeLabel(String preferredName, String preferredId, String interactorAc) {
         if (preferredName != null) {
             return preferredName + " (" + preferredId + ")";
