@@ -3,13 +3,24 @@ package uk.ac.ebi.intact.network.ws.controller;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.intact.network.ws.controller.model.*;
-import uk.ac.ebi.intact.network.ws.controller.utils.*;
+import uk.ac.ebi.intact.network.ws.controller.utils.ColourCodes;
+import uk.ac.ebi.intact.network.ws.controller.utils.NetworkUtility;
+import uk.ac.ebi.intact.network.ws.controller.utils.NodeShape;
 import uk.ac.ebi.intact.search.interactions.model.SearchInteraction;
 import uk.ac.ebi.intact.search.interactions.service.InteractionSearchService;
+import uk.ac.ebi.intact.search.interactions.utils.Constants;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -22,6 +33,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class NetworkController {
 
     private static final Log log = LogFactory.getLog(NetworkController.class);
+
+    //TODO temporary
+    @Value("${server.upload.batch.file.path}")
+    private String uploadBatchFilePath;
 
     private InteractionSearchService interactionSearchService;
 
@@ -38,6 +53,7 @@ public class NetworkController {
             produces = {APPLICATION_JSON_VALUE})
     public NetworkJson getGraphJson(
             @RequestParam(value = "query") String query,
+            @RequestParam(value = "batchSearch", required = false) boolean batchSearch,
             @RequestParam(value = "interactorSpeciesFilter", required = false) Set<String> interactorSpeciesFilter,
             @RequestParam(value = "interactorTypeFilter", required = false) Set<String> interactorTypeFilter,
             @RequestParam(value = "interactionDetectionMethodFilter", required = false) Set<String> interactionDetectionMethodFilter,
@@ -51,8 +67,20 @@ public class NetworkController {
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "pageSize", defaultValue = Integer.MAX_VALUE + "", required = false) int pageSize) {
 
-        Page<SearchInteraction> interactions = interactionSearchService.findInteractionForGraphJson(query, interactorSpeciesFilter, interactorTypeFilter, interactionDetectionMethodFilter,
-                interactionTypeFilter, interactionHostOrganismFilter, isNegativeFilter, minMiScore, maxMiScore, interSpecies, page, pageSize);
+        Page<SearchInteraction> interactions = interactionSearchService.findInteractionForGraphJson(
+                extractSearchTerms(query),
+                batchSearch,
+                interactorSpeciesFilter,
+                interactorTypeFilter,
+                interactionDetectionMethodFilter,
+                interactionTypeFilter,
+                interactionHostOrganismFilter,
+                isNegativeFilter,
+                minMiScore,
+                maxMiScore,
+                interSpecies,
+                page,
+                pageSize);
 
         return toCytoscapeJsonFormat(interactions.getContent(), isCompound);
     }
@@ -177,5 +205,36 @@ public class NetworkController {
         graphCompoundNode.setShape(NodeShape.ELLIPSE);
 
         return graphCompoundNodeGroup;
+    }
+
+    //TODO temporary
+    private String extractSearchTerms(String query) {
+
+        String searchTerms = "";
+
+        if (query.startsWith(Constants.UPLOADED_BATCH_FILE_PREFIX)) {
+            File uploadedBatchFile = new File(uploadBatchFilePath + query);
+            if (uploadedBatchFile.exists()) {
+                try {
+                    BufferedReader bufferedReader = new BufferedReader(new FileReader(uploadedBatchFile));
+                    String line;
+                    int count = 0;
+                    while ((line = bufferedReader.readLine()) != null) {
+                        if (count > 0) {
+                            searchTerms = searchTerms + "," + line;
+                        } else {
+                            searchTerms = line;
+                        }
+                        count++;
+                    }
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                }
+            }
+        } else {
+            searchTerms = query;
+        }
+
+        return searchTerms;
     }
 }
