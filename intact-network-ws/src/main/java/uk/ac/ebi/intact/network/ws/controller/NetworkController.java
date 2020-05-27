@@ -15,7 +15,6 @@ import uk.ac.ebi.intact.network.ws.controller.utils.NetworkUtility;
 import uk.ac.ebi.intact.network.ws.controller.utils.NodeShape;
 import uk.ac.ebi.intact.search.interactions.model.SearchInteraction;
 import uk.ac.ebi.intact.search.interactions.service.InteractionSearchService;
-import uk.ac.ebi.intact.search.interactions.utils.Constants;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,8 +34,11 @@ public class NetworkController {
     private static final Log log = LogFactory.getLog(NetworkController.class);
 
     //TODO temporary
+    public static final String UPLOADED_BATCH_FILE_PREFIX = "file_";
+
     @Value("${server.upload.batch.file.path}")
     private String uploadBatchFilePath;
+
 
     private InteractionSearchService interactionSearchService;
 
@@ -210,9 +212,9 @@ public class NetworkController {
     //TODO temporary
     private String extractSearchTerms(String query) {
 
-        String searchTerms = "";
+        StringBuilder searchTerms = new StringBuilder();
 
-        if (query.startsWith(Constants.UPLOADED_BATCH_FILE_PREFIX)) {
+        if (query.startsWith(UPLOADED_BATCH_FILE_PREFIX)) {
             File uploadedBatchFile = new File(uploadBatchFilePath + query);
             if (uploadedBatchFile.exists()) {
                 try {
@@ -221,9 +223,9 @@ public class NetworkController {
                     int count = 0;
                     while ((line = bufferedReader.readLine()) != null) {
                         if (count > 0) {
-                            searchTerms = searchTerms + "," + line;
+                            searchTerms.append(",").append(line);
                         } else {
-                            searchTerms = line;
+                            searchTerms = new StringBuilder(line);
                         }
                         count++;
                     }
@@ -232,9 +234,9 @@ public class NetworkController {
                 }
             }
         } else {
-            searchTerms = query;
+            searchTerms = new StringBuilder(query);
         }
 
-        return searchTerms;
+        return searchTerms.toString();
     }
 }
