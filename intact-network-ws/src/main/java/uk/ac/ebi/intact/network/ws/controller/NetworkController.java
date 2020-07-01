@@ -31,11 +31,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 public class NetworkController {
 
-    private static final Log log = LogFactory.getLog(NetworkController.class);
-
     //TODO temporary
     public static final String UPLOADED_BATCH_FILE_PREFIX = "file_";
-
+    private static final Log log = LogFactory.getLog(NetworkController.class);
     @Value("${server.upload.batch.file.path}")
     private String uploadBatchFilePath;
 
@@ -50,7 +48,7 @@ public class NetworkController {
     @CrossOrigin(origins = "*")
     @GetMapping(value = "/getInteractions",
             params = {
-                "query"
+                    "query"
             },
             produces = {APPLICATION_JSON_VALUE})
     public NetworkJson getGraphJson(
@@ -215,7 +213,7 @@ public class NetworkController {
         StringBuilder searchTerms = new StringBuilder();
 
         if (query.startsWith(UPLOADED_BATCH_FILE_PREFIX)) {
-            File uploadedBatchFile = new File(uploadBatchFilePath + query);
+            File uploadedBatchFile = new File(uploadBatchFilePath + File.separator + query);
             if (uploadedBatchFile.exists()) {
                 try {
                     BufferedReader bufferedReader = new BufferedReader(new FileReader(uploadedBatchFile));
