@@ -12,6 +12,9 @@ public class NetworkJson {
     @JsonValue
     private List<Object> compoundData;
 
+    public NetworkJson(List<Object> compoundData) {
+        this.compoundData = compoundData;
+    }
 
     public List<Object> getCompoundData() {
         return compoundData;

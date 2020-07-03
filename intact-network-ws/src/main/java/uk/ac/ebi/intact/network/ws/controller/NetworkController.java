@@ -5,6 +5,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,7 +53,7 @@ public class NetworkController {
                     "query"
             },
             produces = {APPLICATION_JSON_VALUE})
-    public NetworkJson getGraphJson(
+    public ResponseEntity<NetworkJson> getGraphJson(
             @RequestParam(value = "query") String query,
             @RequestParam(value = "batchSearch", required = false) boolean batchSearch,
             @RequestParam(value = "interactorSpeciesFilter", required = false) Set<String> interactorSpeciesFilter,
@@ -67,7 +69,9 @@ public class NetworkController {
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "pageSize", defaultValue = Integer.MAX_VALUE + "", required = false) int pageSize) {
 
-        Page<SearchInteraction> interactions = interactionSearchService.findInteractionForGraphJson(
+        HttpStatus httpStatus = HttpStatus.OK;
+        NetworkJson networkJson = null;
+        long interactionsCount = interactionSearchService.countInteractionsForGraphJson(
                 extractSearchTerms(query),
                 batchSearch,
                 interactorSpeciesFilter,
@@ -78,15 +82,36 @@ public class NetworkController {
                 isNegativeFilter,
                 minMiScore,
                 maxMiScore,
-                interSpecies,
-                page,
-                pageSize);
+                interSpecies
+        );
 
-        return toCytoscapeJsonFormat(interactions.getContent(), isCompound);
+        if (interactionsCount > 1300) {
+            httpStatus = HttpStatus.FORBIDDEN;
+        } else {
+            Page<SearchInteraction> interactions = interactionSearchService.findInteractionForGraphJson(
+                    extractSearchTerms(query),
+                    batchSearch,
+                    interactorSpeciesFilter,
+                    interactorTypeFilter,
+                    interactionDetectionMethodFilter,
+                    interactionTypeFilter,
+                    interactionHostOrganismFilter,
+                    isNegativeFilter,
+                    minMiScore,
+                    maxMiScore,
+                    interSpecies,
+                    page,
+                    pageSize);
+
+            networkJson = toCytoscapeJsonFormat(interactions.getContent(), isCompound);
+        }
+        //initialising empty json if request is forbidden
+        networkJson = (networkJson == null) ? new NetworkJson(new ArrayList<Object>()) : networkJson;
+
+        return new ResponseEntity<NetworkJson>(networkJson, httpStatus);
     }
 
     private NetworkJson toCytoscapeJsonFormat(List<SearchInteraction> interactions, boolean isCompound) {
-        NetworkJson graphCompoundJson = new NetworkJson();
         List<Object> edgesAndNodes = new ArrayList<>();
         HashMap<String, NetworkNode> interactorAcAndNodeMap = new HashMap<String, NetworkNode>();
         HashSet<String> specieSet = new HashSet<>();
@@ -191,8 +216,7 @@ public class NetworkController {
             }
         }
 
-        graphCompoundJson.setCompoundData(edgesAndNodes);
-        return graphCompoundJson;
+        return new NetworkJson(edgesAndNodes);
     }
 
     public NetworkNodeGroup createMetaNode(String parentTaxId, String species) {
