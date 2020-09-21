@@ -93,6 +93,7 @@ public class NetworkUtility {
         interactorTypeDescendantsMap.put("MI:0250", null);// Gene
         interactorTypeDescendantsMap.put("MI:0326", null);// Protein
         interactorTypeDescendantsMap.put("MI:0327", null);// Peptide
+        interactorTypeDescendantsMap.put("MI:0314", null);// Complex
 
         for (String parentInteractorType : interactorTypeDescendantsMap.keySet()) {
 
@@ -348,13 +349,12 @@ public class NetworkUtility {
                     break;
 
                 case "MI:0326":// Protein
-                    shape = NodeShape.ELLIPSE;
-                    break;
-
                 case "MI:0327": // Peptide
                     shape = NodeShape.ELLIPSE;
                     break;
-
+                case "MI:0314": //Complex
+                    shape = NodeShape.HEXAGON;
+                    break;
                 default:
                     shape = NodeShape.TAG;
             }

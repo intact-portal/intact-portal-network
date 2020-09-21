@@ -10,4 +10,5 @@ public class NodeShape {
     public static final String TAG = "tag";
     public static final String UPSIDE_DOWN_CUT_TRIANGLE = "vee"; // DNA
     public static final String ELLIPSE = "ellipse"; // Protein
+    public static final String HEXAGON = "hexagon";
 }
