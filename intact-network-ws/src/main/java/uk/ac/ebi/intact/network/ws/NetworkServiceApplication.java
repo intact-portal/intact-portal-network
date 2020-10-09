@@ -38,6 +38,11 @@ public class NetworkServiceApplication extends SpringBootServletInitializer {
         return new SolrTemplate(solrClient());
     }
 
+    @Bean
+    public boolean isEmbeddedSolr() {
+        return false;
+    }
+
     public static void main(String[] args) {
         initializeSpeciesDescendantsMapping();
         initializeInteractorTypeDescendantsMapping();
