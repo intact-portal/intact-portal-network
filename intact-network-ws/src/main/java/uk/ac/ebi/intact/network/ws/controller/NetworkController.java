@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.intact.network.ws.controller.model.*;
@@ -48,10 +48,7 @@ public class NetworkController {
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping(value = "/getInteractions",
-            params = {
-                    "query"
-            },
+    @PostMapping(value = "/getInteractions",
             produces = {APPLICATION_JSON_VALUE})
     public ResponseEntity<NetworkJson> getGraphJson(
             @RequestParam(value = "query") String query,
