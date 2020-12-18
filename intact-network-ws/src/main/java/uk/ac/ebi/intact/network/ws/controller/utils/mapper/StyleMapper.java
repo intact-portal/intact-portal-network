@@ -7,6 +7,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.json.XML;
+import uk.ac.ebi.intact.network.ws.controller.utils.EdgeColor;
+import uk.ac.ebi.intact.network.ws.controller.utils.EdgeShape;
 import uk.ac.ebi.intact.network.ws.controller.utils.HttpUtils;
 import uk.ac.ebi.intact.network.ws.controller.utils.NodeShape;
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.definitions.InteractionType;
@@ -24,12 +26,6 @@ import static java.util.stream.Collectors.toMap;
 import static uk.ac.ebi.intact.network.ws.controller.utils.mapper.definitions.Taxons.ARTIFICIAL;
 
 public class StyleMapper {
-    private static boolean taxIdsReady = false;
-    private static boolean taxIdsWorking = false;
-    private static boolean nodeTypesReady = false;
-    private static boolean nodeTypesWorking = false;
-    private static boolean edgeTypesReady = false;
-    private static boolean edgeTypesWorking = false;
     public static final Log logger = LogFactory.getLog(StyleMapper.class);
 
 
@@ -49,7 +45,6 @@ public class StyleMapper {
                     (u, v) -> u)
             );
 
-    public static Map<String, Color> originalSpeciesColors = new HashMap<>(speciesColors);
     public static Map<String, Color> originalKingdomColors = new HashMap<>(kingdomColors);
 
     public static Map<String, List<String>> taxIdToChildrenTaxIds = new HashMap<>();
@@ -69,8 +64,6 @@ public class StyleMapper {
                     (u, v) -> u)
             );
 
-    public static final Map<String, NodeShape> originalNodeTypeToShape = new HashMap<>(nodeTypeToShape);
-
     public static final Map<String, List<String>> nodeTypeToParent = new HashMap<>();
     public static final Map<String, List<String>> edgeTypeToParent = new HashMap<>();
 
@@ -81,41 +74,16 @@ public class StyleMapper {
         Arrays.stream(InteractorType.values()).filter(type -> !type.MI_ID.isEmpty()).forEach(type -> typesToIds.put(type.name, type.MI_ID));
     }
 
-    public static String getColorForInteractionType(String interactionTypeMIIdentifier) {
-        return encodeColor(edgeTypeToColor.get(interactionTypeMIIdentifier));
-    }
-
-    public static String getColorForTaxId(Integer taxonId) {
-        String taxId = taxonId.toString();
-        if (speciesColors.containsKey(taxId)) {
-            return encodeColor(speciesColors.get(taxId));
-        } else if (kingdomColors.containsKey(taxId)) {
-            return encodeColor(kingdomColors.get(taxId));
-        } else return "rgb(173, 188, 148)";
-    }
-
-    public static String getShapeForInteractorType(String interactorType) {
-        NodeShape nodeShape = nodeTypeToShape.get(interactorType);
-        if (nodeShape != null) return nodeShape.title;
-        else return NodeShape.TAG.title;
-    }
-
     public static void initializeSpeciesAndKingdomColors() {
-        if (!taxIdsWorking) {
-            taxIdsWorking = true;
+        for (String kingdomId : kingdomColors.keySet()) {
+            taxIdToChildrenTaxIds.put(kingdomId, new ArrayList<>());
+        }
+        taxIdToChildrenTaxIds.get(ARTIFICIAL.taxId).add("-1");
+        speciesColors.put("-1", kingdomColors.get(ARTIFICIAL.taxId));
 
-            for (String kingdomId : kingdomColors.keySet()) {
-                taxIdToChildrenTaxIds.put(kingdomId, new ArrayList<>());
-            }
-            taxIdToChildrenTaxIds.get(ARTIFICIAL.taxId).add("-1");
-            speciesColors.put("-1", kingdomColors.get(ARTIFICIAL.taxId));
-
-            for (String parentSpecie : new ArrayList<>(speciesColors.keySet())) {
-                Color paint = speciesColors.get(parentSpecie);
-                addDescendantsColors(parentSpecie, paint);
-            }
-
-            taxIdsReady = true;
+        for (String parentSpecie : new ArrayList<>(speciesColors.keySet())) {
+            Color paint = speciesColors.get(parentSpecie);
+            addDescendantsColors(parentSpecie, paint);
         }
     }
 
@@ -207,29 +175,24 @@ public class StyleMapper {
     }
 
     public static void initializeNodeTypeToShape() {
-        if (!nodeTypesWorking) {
-            nodeTypesWorking = true;
-            for (String miType : new ArrayList<>(nodeTypeToShape.keySet())) {
-                setChildrenValues(nodeTypeToShape, miType, nodeTypeToShape.get(miType), nodeTypeToParent);
-            }
-            nodeTypesReady = true;
+        for (String miType : new ArrayList<>(nodeTypeToShape.keySet())) {
+            setChildrenValues(nodeTypeToShape, miType, nodeTypeToShape.get(miType), nodeTypeToParent);
         }
+
+
     }
 
     public static void initializeEdgeTypeToColor() {
-        if (!edgeTypesWorking) {
-            edgeTypesWorking = true;
 
-            Map<String, Color> originalColors = new HashMap<>(edgeTypeToColor);
+        Map<String, Color> originalColors = new HashMap<>(edgeTypeToColor);
 
-            Arrays.stream(InteractionType.values())
-                    .filter(type -> type.queryChildren)
-                    .forEach(type -> setChildrenValues(edgeTypeToColor, type.MI_ID.replace("_",":"), type.defaultColor, edgeTypeToParent));
+        Arrays.stream(InteractionType.values())
+                .filter(type -> type.queryChildren)
+                .forEach(type -> setChildrenValues(edgeTypeToColor, type.MI_ID.replace("_", ":"), type.defaultColor, edgeTypeToParent));
 
-            edgeTypeToColor.putAll(originalColors);
+        edgeTypeToColor.putAll(originalColors);
 
-            edgeTypesReady = true;
-        }
+
     }
 
     private static <T> void setChildrenValues(Map<String, T> mapToFill, String parentId, T parentValue, Map<String, List<String>> parentToChildIdMap) {
@@ -273,19 +236,58 @@ public class StyleMapper {
         return taxIds.stream().filter(taxId -> !taxId.startsWith("-")).collect(toList()).toString().replaceAll("[\\[\\]]", "").replaceAll(" ", "%20");
     }
 
-    public static boolean speciesNotReady() {
-        return !taxIdsReady;
-    }
-
-    public static boolean nodeTypesNotReady() {
-        return !nodeTypesReady;
-    }
-
-    public static boolean edgeTypesNotReady() {
-        return !edgeTypesReady;
-    }
-
     private static String encodeColor(Color color) {
         return String.format("rgb(%s,%s,%s)", color.getRed(), color.getGreen(), color.getBlue());
+    }
+
+    public static String getColorForInteractionType(String interactionTypeMIIdentifier) {
+        return encodeColor(edgeTypeToColor.get(interactionTypeMIIdentifier));
+    }
+
+    public static String getColorForTaxId(Integer taxonId) {
+        String taxId = taxonId.toString();
+        if (speciesColors.containsKey(taxId)) {
+            return encodeColor(speciesColors.get(taxId));
+        } else if (kingdomColors.containsKey(taxId)) {
+            return encodeColor(kingdomColors.get(taxId));
+        } else return "rgb(173, 188, 148)";
+    }
+
+    public static String getShapeForInteractorType(String interactorType) {
+        NodeShape nodeShape = nodeTypeToShape.get(interactorType);
+        if (nodeShape != null) return nodeShape.title;
+        else return NodeShape.TAG.title;
+    }
+
+    public static String getShapeForExpansionType(String expansionType) {
+
+        String shape = null;
+        if (expansionType == null) {
+            shape = EdgeShape.SOLID_LINE;
+        } else {
+            switch (expansionType) {
+                case "spoke expansion":
+                    shape = EdgeShape.DASHED_LINE;
+                    break;
+
+                default:
+                    shape = EdgeShape.SOLID_LINE;
+            }
+        }
+        return shape;
+    }
+
+    public static String getColorForCollapsedEdgeDiscrete(double miScore) {
+
+        int miScoreFloor = (int) Math.floor(miScore * 10);
+        return EdgeColor.YELLOW_ORANGE_BROWN_PALETTE[miScoreFloor];
+    }
+
+    public static String createNodeLabel(String preferredName, String preferredId, String interactorAc) {
+        if (preferredName != null) {
+            return preferredName + " (" + preferredId + ")";
+        } else {
+            return interactorAc;
+        }
     }
 }

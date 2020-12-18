@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.intact.network.ws.controller.model.*;
 import uk.ac.ebi.intact.network.ws.controller.utils.ColourCodes;
-import uk.ac.ebi.intact.network.ws.controller.utils.NetworkUtility;
 import uk.ac.ebi.intact.network.ws.controller.utils.NodeShape;
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.StyleMapper;
 import uk.ac.ebi.intact.search.interactions.model.SearchInteraction;
@@ -138,8 +137,8 @@ public class NetworkController {
                 networkLink.setInteractionType(searchInteraction.getType());
                 networkLink.setInteractionDetectionMethod(searchInteraction.getDetectionMethod());
                 networkLink.setColor(StyleMapper.getColorForInteractionType(searchInteraction.getTypeMIIdentifier()));
-                networkLink.setCollapsedColor(NetworkUtility.getColorForCollapsedEdgeDiscrete(searchInteraction.getIntactMiscore()));
-                networkLink.setShape(NetworkUtility.getShapeForExpansionType(searchInteraction.getExpansionMethod()));
+                networkLink.setCollapsedColor(StyleMapper.getColorForCollapsedEdgeDiscrete(searchInteraction.getIntactMiscore()));
+                networkLink.setShape(StyleMapper.getShapeForExpansionType(searchInteraction.getExpansionMethod()));
                 networkLink.setAffectedByMutation(searchInteraction.isDisruptedByMutation());
                 networkLink.setMiScore(searchInteraction.getIntactMiscore());
                 networkEdgeGroup.setInteraction(networkLink);
@@ -159,7 +158,7 @@ public class NetworkController {
                             }
                             networkNode.setParent(parentTaxId);
                         }
-                        networkNode.setInteractorId(NetworkUtility.createNodeLabel(searchInteraction.getMoleculeA(),
+                        networkNode.setInteractorId(StyleMapper.createNodeLabel(searchInteraction.getMoleculeA(),
                                 searchInteraction.getUniqueIdA(), searchInteraction.getAcA()));
                         networkNode.setPreferredId(searchInteraction.getIdA());
                         networkNode.setPreferredIdWithDB(searchInteraction.getIdA());
@@ -195,7 +194,7 @@ public class NetworkController {
                             }
                             networkNode.setParent(parentTaxId);
                         }
-                        networkNode.setInteractorId(NetworkUtility.createNodeLabel(searchInteraction.getMoleculeB(),
+                        networkNode.setInteractorId(StyleMapper.createNodeLabel(searchInteraction.getMoleculeB(),
                                 searchInteraction.getUniqueIdB(), searchInteraction.getAcB()));
                         networkNode.setPreferredId(searchInteraction.getIdB());
                         networkNode.setPreferredIdWithDB(searchInteraction.getIdB());
