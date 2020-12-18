@@ -15,6 +15,7 @@ import uk.ac.ebi.intact.network.ws.controller.model.*;
 import uk.ac.ebi.intact.network.ws.controller.utils.ColourCodes;
 import uk.ac.ebi.intact.network.ws.controller.utils.NetworkUtility;
 import uk.ac.ebi.intact.network.ws.controller.utils.NodeShape;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.StyleMapper;
 import uk.ac.ebi.intact.search.interactions.model.SearchInteraction;
 import uk.ac.ebi.intact.search.interactions.service.InteractionSearchService;
 
@@ -113,6 +114,15 @@ public class NetworkController {
         HashMap<String, NetworkNode> interactorAcAndNodeMap = new HashMap<String, NetworkNode>();
         HashSet<String> specieSet = new HashSet<>();
 
+        Set<String> taxIds = new HashSet<>();
+        interactions.forEach(searchInteraction -> {
+            Integer taxIdA = searchInteraction.getTaxIdA();
+            if (taxIdA != null) taxIds.add(taxIdA.toString());
+            Integer taxIdB = searchInteraction.getTaxIdB();
+            if (taxIdB != null) taxIds.add(taxIdB.toString());
+        });
+        StyleMapper.harvestKingdomsOf(taxIds, true);
+
         for (SearchInteraction searchInteraction : interactions) {
             try {
                 NetworkEdgeGroup networkEdgeGroup = new NetworkEdgeGroup();
@@ -127,7 +137,7 @@ public class NetworkController {
                 networkLink.setInteractionAc(searchInteraction.getAc());
                 networkLink.setInteractionType(searchInteraction.getType());
                 networkLink.setInteractionDetectionMethod(searchInteraction.getDetectionMethod());
-                networkLink.setColor(NetworkUtility.getColorForInteractionType(searchInteraction.getTypeMIIdentifier()));
+                networkLink.setColor(StyleMapper.getColorForInteractionType(searchInteraction.getTypeMIIdentifier()));
                 networkLink.setCollapsedColor(NetworkUtility.getColorForCollapsedEdgeDiscrete(searchInteraction.getIntactMiscore()));
                 networkLink.setShape(NetworkUtility.getShapeForExpansionType(searchInteraction.getExpansionMethod()));
                 networkLink.setAffectedByMutation(searchInteraction.isDisruptedByMutation());
@@ -156,8 +166,8 @@ public class NetworkController {
                         networkNode.setInteractorType(searchInteraction.getTypeA());
                         networkNode.setPreferredId(searchInteraction.getUniqueIdA());
                         networkNode.setInteractorName(searchInteraction.getMoleculeA());
-                        networkNode.setColor(NetworkUtility.getColorForTaxId(searchInteraction.getTaxIdA()));
-                        networkNode.setShape(NetworkUtility.getShapeForInteractorType(searchInteraction.getTypeMIA()));
+                        networkNode.setColor(StyleMapper.getColorForTaxId(searchInteraction.getTaxIdA()));
+                        networkNode.setShape(StyleMapper.getShapeForInteractorType(searchInteraction.getTypeMIA()));
                         networkNode.setClusterId(searchInteraction.getTaxIdA());
                         networkNode.setMutation(searchInteraction.isMutationA());
                         networkNodeGroup.setInteractor(networkNode);
@@ -192,8 +202,8 @@ public class NetworkController {
                         networkNode.setInteractorType(searchInteraction.getTypeB());
                         networkNode.setPreferredId(searchInteraction.getUniqueIdB());
                         networkNode.setInteractorName(searchInteraction.getMoleculeB());
-                        networkNode.setColor(NetworkUtility.getColorForTaxId(searchInteraction.getTaxIdB()));
-                        networkNode.setShape(NetworkUtility.getShapeForInteractorType(searchInteraction.getTypeMIB()));
+                        networkNode.setColor(StyleMapper.getColorForTaxId(searchInteraction.getTaxIdB()));
+                        networkNode.setShape(StyleMapper.getShapeForInteractorType(searchInteraction.getTypeMIB()));
                         networkNode.setClusterId(searchInteraction.getTaxIdB());
                         networkNode.setMutation(searchInteraction.isMutationB());
                         networkNodeGroup.setInteractor(networkNode);
@@ -206,8 +216,9 @@ public class NetworkController {
                 }
                 edgesAndNodes.add(networkEdgeGroup);
             } catch (Exception e) {
-                log.info("Interaction with id: " + searchInteraction.getAcB() + "failed to process" +
-                        "and therefore this interaction will not be in graph json");
+                log.info("Interaction with id: " + searchInteraction.getAcB() + " failed to process" +
+                        " and therefore this interaction will not be in graph json");
+                log.error(e.getMessage());
                 //TODO... Uncomment following
                 //throw e;
             }
@@ -223,7 +234,7 @@ public class NetworkController {
         graphCompoundNode.setColor(ColourCodes.META_NODE);
         graphCompoundNode.setSpeciesName(species);
         graphCompoundNodeGroup.setInteractor(graphCompoundNode);
-        graphCompoundNode.setShape(NodeShape.ELLIPSE);
+        graphCompoundNode.setShape(NodeShape.ELLIPSE.title);
 
         return graphCompoundNodeGroup;
     }

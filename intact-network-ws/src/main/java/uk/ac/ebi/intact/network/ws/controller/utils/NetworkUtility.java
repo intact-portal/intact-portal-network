@@ -227,7 +227,7 @@ public class NetworkUtility {
         return jsonText;
     }
 
-    public static String getColorForTaxId(Integer taxId) {
+    private static String getColorForTaxId(Integer taxId) {
         Integer parentSpecie = NetworkUtility.descendantsParentMap.get(taxId);
         Integer specieTaxId = ((parentSpecie != null) ? parentSpecie : (taxId));
 
@@ -277,7 +277,7 @@ public class NetworkUtility {
         return color;
     }
 
-    public static String getColorForInteractionType(String interactionTypeMIIdentifier) {
+    private static String getColorForInteractionType(String interactionTypeMIIdentifier) {
 
         String interactionTypeIdentifier = null;
         String color = null;
@@ -323,11 +323,11 @@ public class NetworkUtility {
         return color;
     }
 
-    public static String getShapeForInteractorType(String interactorType) {
+    private static String getShapeForInteractorType(String interactorType) {
         String parentInteractorType = NetworkUtility.interactorTypeParentMap.get(interactorType);
         String interactorTypeMI = ((parentInteractorType != null) ? parentInteractorType : (interactorType));
 
-        String shape = null;
+        NodeShape shape = null;
         if (interactorTypeMI == null) {
             shape = NodeShape.TAG;
         } else {
@@ -341,7 +341,7 @@ public class NetworkUtility {
                     break;
 
                 case "MI:0319": //DNA
-                    shape = NodeShape.UPSIDE_DOWN_CUT_TRIANGLE;
+                    shape = NodeShape.VEE;
                     break;
 
                 case "MI:0250": // Gene
@@ -360,7 +360,7 @@ public class NetworkUtility {
             }
         }
 
-        return shape;
+        return shape.title;
     }
 
     public static String getShapeForExpansionType(String expansionType) {

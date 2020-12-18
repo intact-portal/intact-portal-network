@@ -11,8 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.solr.core.SolrOperations;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.repository.config.EnableSolrRepositories;
-
-import static uk.ac.ebi.intact.network.ws.controller.utils.NetworkUtility.*;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.StyleMapper;
 
 @EnableSolrRepositories(basePackages = "uk.ac.ebi.intact.search",
         schemaCreationSupport = true)
@@ -44,9 +43,12 @@ public class NetworkServiceApplication extends SpringBootServletInitializer {
     }
 
     public static void main(String[] args) {
-        initializeSpeciesDescendantsMapping();
-        initializeInteractorTypeDescendantsMapping();
-        initializeInteractionTypeDescendantsMapping();
+//        initializeSpeciesDescendantsMapping();
+//        initializeInteractorTypeDescendantsMapping();
+//        initializeInteractionTypeDescendantsMapping();
+        StyleMapper.initializeEdgeTypeToColor();
+        StyleMapper.initializeNodeTypeToShape();
+        StyleMapper.initializeSpeciesAndKingdomColors();
         SpringApplication.run(NetworkServiceApplication.class, args);
     }
 }

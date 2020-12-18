@@ -3,12 +3,20 @@ package uk.ac.ebi.intact.network.ws.controller.utils;
 /**
  * Created by anjali on 12/09/19.
  */
-public class NodeShape {
-    public static final String TRIANGLE = "triangle"; // Bioactive Entity
-    public static final String DIAMOND = "diamond"; // RNA
-    public static final String ROUNDED_RECTANGLE = "round-rectangle"; // Gene
-    public static final String TAG = "tag";
-    public static final String UPSIDE_DOWN_CUT_TRIANGLE = "vee"; // DNA
-    public static final String ELLIPSE = "ellipse"; // Protein
-    public static final String HEXAGON = "hexagon";
+public enum NodeShape {
+    TRIANGLE("triangle"), // Bioactive Entity
+    DIAMOND("diamond"), // RNA
+    ROUNDED_RECTANGLE("round-rectangle"), // Gene
+    TAG("tag"),
+    VEE("vee"), // DNA
+    ELLIPSE("ellipse"), // Protein,
+    PARALLELOGRAM("rhomboid"),
+    OCTAGON("octagon"),
+    HEXAGON("hexagon");
+
+    public final String title;
+
+    NodeShape(String title) {
+        this.title = title;
+    }
 }
