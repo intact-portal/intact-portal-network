@@ -85,7 +85,7 @@ public class NetworkController {
         if (interactionsCount > 1300) {
             httpStatus = HttpStatus.FORBIDDEN;
         } else {
-            Page<SearchInteraction> interactions = interactionSearchService.findInteractionForGraphJson(
+            Page<SearchInteraction> interactions = interactionSearchService.findInteractionForGraphJsonWithFacet(
                     extractSearchTerms(query),
                     batchSearch,
                     interactorSpeciesFilter,
