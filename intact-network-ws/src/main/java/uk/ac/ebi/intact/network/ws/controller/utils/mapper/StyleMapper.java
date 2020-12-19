@@ -11,10 +11,10 @@ import uk.ac.ebi.intact.network.ws.controller.utils.EdgeColor;
 import uk.ac.ebi.intact.network.ws.controller.utils.EdgeShape;
 import uk.ac.ebi.intact.network.ws.controller.utils.HttpUtils;
 import uk.ac.ebi.intact.network.ws.controller.utils.NodeShape;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.definitions.InteractionType;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.definitions.InteractorType;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.definitions.SourceOntology;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.definitions.Taxons;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.archetypes.InteractionType;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.archetypes.InteractorType;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.archetypes.SourceOntology;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.archetypes.Taxon;
 
 import java.awt.*;
 import java.io.IOException;
@@ -23,22 +23,22 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static uk.ac.ebi.intact.network.ws.controller.utils.mapper.definitions.Taxons.ARTIFICIAL;
+import static uk.ac.ebi.intact.network.ws.controller.utils.mapper.archetypes.Taxon.ARTIFICIAL;
 
 public class StyleMapper {
     public static final Log logger = LogFactory.getLog(StyleMapper.class);
 
 
-    public static Map<String, Color> speciesColors = Arrays.stream(Taxons.values())
-            .filter(taxons -> taxons.isSpecies)
+    public static Map<String, Color> speciesColors = Arrays.stream(Taxon.values())
+            .filter(taxon -> taxon.isSpecies)
             .collect(toMap(
                     taxon -> taxon.taxId,
                     taxon -> taxon.defaultColor,
                     (u, v) -> u)
             );
 
-    public static Map<String, Color> kingdomColors = Arrays.stream(Taxons.values())
-            .filter(taxons -> !taxons.isSpecies)
+    public static Map<String, Color> kingdomColors = Arrays.stream(Taxon.values())
+            .filter(taxon -> !taxon.isSpecies)
             .collect(toMap(
                     taxon -> taxon.taxId,
                     taxon -> taxon.defaultColor,

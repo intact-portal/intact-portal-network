@@ -1,9 +1,9 @@
-package uk.ac.ebi.intact.network.ws.controller.utils.mapper.definitions;
+package uk.ac.ebi.intact.network.ws.controller.utils.mapper.archetypes;
 
 
 import uk.ac.ebi.intact.network.ws.controller.utils.NodeShape;
 
-public enum InteractorType {
+public enum InteractorType implements Archetype<NodeShape> {
     BIO_ACTIVE_ENTITY("bioactive entity", "MI_1100", NodeShape.TRIANGLE),
     PROTEIN("protein", "MI_0326", NodeShape.ELLIPSE),
     GENE("gene", "MI_0250", NodeShape.ROUNDED_RECTANGLE),
@@ -24,5 +24,16 @@ public enum InteractorType {
         this.name = name;
         this.MI_ID = MI_ID;
         this.shape = shape;
+    }
+
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public NodeShape getVisualProperty() {
+        return shape;
     }
 }

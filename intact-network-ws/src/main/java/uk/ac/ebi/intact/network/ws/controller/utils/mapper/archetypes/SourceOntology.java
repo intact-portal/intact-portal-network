@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.network.ws.controller.utils.mapper.definitions;
+package uk.ac.ebi.intact.network.ws.controller.utils.mapper.archetypes;
 
 import java.util.function.Function;
 

@@ -1,11 +1,13 @@
-package uk.ac.ebi.intact.network.ws.controller.utils.mapper.definitions;
+package uk.ac.ebi.intact.network.ws.controller.utils.mapper.archetypes;
+
+import org.apache.commons.math3.geometry.spherical.oned.Arc;
 
 import java.awt.*;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public enum Taxons {
+public enum Taxon implements Archetype<Color> {
     D_MELANOGASTER("7227", "Drosophila melanogaster", true, new Color(59, 148, 144)),
     C_ELEGANS("6239", "Caenorhabditis elegans", true, new Color(55, 109, 104)),
     H_SAPIENS("9606", "Homo sapiens", true, new Color(51, 94, 148)),
@@ -30,34 +32,45 @@ public enum Taxons {
     public final String descriptor;
     public final boolean isSpecies;
     public final Color defaultColor;
-    private static final Map<String, Taxons> taxIdToTaxons = new HashMap<>();
+    private static final Map<String, Taxon> taxIdToTaxons = new HashMap<>();
 
     static {
-        for (Taxons taxon : Taxons.values()) {
+        for (Taxon taxon : Taxon.values()) {
             taxIdToTaxons.put(taxon.taxId, taxon);
         }
     }
 
-    private static final List<Taxons> species = Arrays.stream(Taxons.values()).filter(taxon -> taxon.isSpecies && taxon != CHEMICAL_SYNTHESIS).sorted(Comparator.comparing(o -> o.descriptor)).collect(Collectors.toList());
-    private static final List<Taxons> kingdoms = Arrays.stream(Taxons.values()).filter(taxon -> !taxon.isSpecies).sorted(Comparator.comparing(o -> o.descriptor)).collect(Collectors.toList());
+    private static final List<Taxon> species = Arrays.stream(Taxon.values()).filter(taxon -> taxon.isSpecies && taxon != CHEMICAL_SYNTHESIS).sorted(Comparator.comparing(o -> o.descriptor)).collect(Collectors.toList());
+    private static final List<Taxon> kingdoms = Arrays.stream(Taxon.values()).filter(taxon -> !taxon.isSpecies).sorted(Comparator.comparing(o -> o.descriptor)).collect(Collectors.toList());
 
-    Taxons(String taxId, String descriptor, boolean isSpecies, Color defaultColor) {
+    Taxon(String taxId, String descriptor, boolean isSpecies, Color defaultColor) {
         this.taxId = taxId;
         this.descriptor = descriptor;
         this.isSpecies = isSpecies;
         this.defaultColor = defaultColor;
     }
 
-    public static List<Taxons> getSpecies() {
+    public static List<Taxon> getSpecies() {
         return new ArrayList<>(species);
     }
 
-    public static List<Taxons> getKingdoms() {
+    public static List<Taxon> getKingdoms() {
         return new ArrayList<>(kingdoms);
     }
 
-    public static Taxons getTaxon(String taxId) {
+    public static Taxon getTaxon(String taxId) {
         return taxIdToTaxons.get(taxId);
+    }
+
+
+    @Override
+    public String getName() {
+        return descriptor;
+    }
+
+    @Override
+    public Color getVisualProperty() {
+        return defaultColor;
     }
 }
 

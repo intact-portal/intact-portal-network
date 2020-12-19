@@ -1,8 +1,8 @@
-package uk.ac.ebi.intact.network.ws.controller.utils.mapper.definitions;
+package uk.ac.ebi.intact.network.ws.controller.utils.mapper.archetypes;
 
 import java.awt.*;
 
-public enum InteractionType {
+public enum InteractionType implements Archetype<Color> {
     COLOCOALIZATION("colocalization", "MI_0403", new Color(216, 216, 216), false),
     ASSOCIATION("association", "MI_0914", new Color(186, 228, 188), false),
     PHYSICAL_ASSOCIATION("physical association", "MI_0915",new Color(123, 204, 196), false),
@@ -23,5 +23,15 @@ public enum InteractionType {
         this.MI_ID = MI_ID;
         this.defaultColor = defaultColor;
         this.queryChildren = queryChildren;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public Color getVisualProperty() {
+        return defaultColor;
     }
 }
