@@ -47,9 +47,9 @@ public class NetworkServiceApplication extends SpringBootServletInitializer {
 
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jsonSerialization() {
-        return jacksonObjectMapperBuilder -> {
-            jacksonObjectMapperBuilder.deserializerByType(Color.class, new ColorDeserializer());
-            jacksonObjectMapperBuilder.serializerByType(Color.class, new ColorSerializer());
+        return mapperBuilder -> {
+            mapperBuilder.deserializerByType(Color.class, new ColorDeserializer());
+            mapperBuilder.serializerByType(Color.class, new ColorSerializer());
         };
     }
 

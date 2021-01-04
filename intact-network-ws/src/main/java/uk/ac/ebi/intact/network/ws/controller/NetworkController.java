@@ -16,13 +16,13 @@ import uk.ac.ebi.intact.network.ws.controller.utils.mapper.booleans.InteractionE
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.booleans.InteractionMutationMapper;
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.booleans.InteractorMutationMapper;
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.continuous.MIScoreMapper;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.InteractionTypeMapper;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.InteractorTypeMapper;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.TaxonMapper;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.impl.InteractionTypeMapper;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.impl.InteractorTypeMapper;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.impl.MIOntology;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.impl.TaxonMapper;
 import uk.ac.ebi.intact.search.interactions.model.SearchInteraction;
 import uk.ac.ebi.intact.search.interactions.model.SearchInteractionFields;
 import uk.ac.ebi.intact.search.interactions.service.InteractionSearchService;
-import uk.ac.ebi.intact.search.interactions.model.NetworkQuery;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -47,12 +47,13 @@ public class NetworkController {
     private static final Log log = LogFactory.getLog(NetworkController.class);
 
     private static final TaxonMapper taxonMapper = new TaxonMapper();
-    private static final InteractorTypeMapper interactorTypeMapper = new InteractorTypeMapper();
+    private static final MIOntology miOntology = new MIOntology();
+    private static final InteractorTypeMapper interactorTypeMapper = new InteractorTypeMapper(miOntology);
     private static final InteractorMutationMapper interactorMutationMapper = new InteractorMutationMapper();
 
     private static final MIScoreMapper miScoreMapper = new MIScoreMapper();
     private static final InteractionExpansionMapper interactionExpansionMapper = new InteractionExpansionMapper();
-    private static final InteractionTypeMapper interactionTypeMapper = new InteractionTypeMapper();
+    private static final InteractionTypeMapper interactionTypeMapper = new InteractionTypeMapper(miOntology);
     private static final InteractionMutationMapper interactionMutationMapper = new InteractionMutationMapper();
 
     private static final LegendBuilder legendBuilder = new LegendBuilder(taxonMapper, interactorTypeMapper,
@@ -126,9 +127,9 @@ public class NetworkController {
 
             ;
             networkJson = toCytoscapeJsonFormat(interactions.getContent(), isCompound,
-                    interactions.getFacetResultPage(SearchInteractionFields.SPECIES_A_B_STR).get().map(FacetFieldEntry::getValue).collect(Collectors.toList()), //TODO Replace by taxids of A and B
-                    interactions.getFacetResultPage(SearchInteractionFields.TYPE_MI_IDENTIFIER).get().map(FacetFieldEntry::getValue).collect(Collectors.toList()),
-                    interactions.getFacetResultPage(SearchInteractionFields.TYPE_MI_A).get().map(FacetFieldEntry::getValue).collect(Collectors.toList()) //TODO replace by a faceting of both A and B
+                    interactions.getFacetResultPage(SearchInteractionFields.SPECIES_A_B_STR).get().map(FacetFieldEntry::getValue).collect(Collectors.toSet()), //TODO Replace by taxids of A and B
+                    interactions.getFacetResultPage(SearchInteractionFields.TYPE_MI_IDENTIFIER).get().map(FacetFieldEntry::getValue).collect(Collectors.toSet()),
+                    interactions.getFacetResultPage(SearchInteractionFields.TYPE_MI_A).get().map(FacetFieldEntry::getValue).collect(Collectors.toSet()) //TODO replace by a faceting of both A and B
             );
         }
         //initialising empty json if request is forbidden
@@ -137,12 +138,18 @@ public class NetworkController {
         return new ResponseEntity<>(networkJson, httpStatus);
     }
 
-    private NetworkJson toCytoscapeJsonFormat(List<SearchInteraction> interactions, boolean isCompound, List<String> taxIdFacets, List<String> interactionTypeFacets, List<String> interactorTypeFacets) {
+    private NetworkJson toCytoscapeJsonFormat(List<SearchInteraction> interactions, boolean isCompound, Set<String> taxIdFacets, Set<String> interactionTypeFacets, Set<String> interactorTypeFacets) {
         List<Object> edgesAndNodes = new ArrayList<>();
         Map<String, NetworkNode> acToNode = new HashMap<>();
         boolean nodeMutated = false;
         boolean edgeExpanded = false;
         boolean edgeAffectedByMutation = false;
+
+        // TODO: Remove when Facets uses Solr
+        taxIdFacets = new HashSet<>();
+        interactionTypeFacets = new HashSet<>();
+        interactorTypeFacets = new HashSet<>();
+        // TO SUPPRESS
 
 
         for (SearchInteraction searchInteraction : interactions) {
@@ -162,6 +169,7 @@ public class NetworkController {
 
                 networkLink.setColor(interactionTypeMapper.getStyleOf(searchInteraction.getTypeMIIdentifier()));
                 networkLink.setCollapsedColor(miScoreMapper.getStyleOf(searchInteraction.getIntactMiscore()));
+                interactionTypeFacets.add(searchInteraction.getType()); // TODO: Remove on Solr faceting
                 boolean spokeExpanded = searchInteraction.getExpansionMethod().equals("spoke expansion");
                 if (spokeExpanded) edgeExpanded = true;
                 networkLink.setShape(interactionExpansionMapper.getStyleOf(spokeExpanded));
@@ -177,9 +185,8 @@ public class NetworkController {
                     registerNode(acToNode, edgesAndNodes,
                             searchInteraction.getAcA(), searchInteraction.getTaxIdA(), searchInteraction.getSpeciesA(), isCompound,
                             searchInteraction.getMoleculeA(), searchInteraction.getUniqueIdA(), searchInteraction.getIdA(),
-                            searchInteraction.getTypeA(), searchInteraction.getTypeMIA(), isMutated);
+                            searchInteraction.getTypeA(), searchInteraction.getTypeMIA(), isMutated, taxIdFacets, interactorTypeFacets);
                     if (isMutated) nodeMutated = true;
-
                 }
 
                 if (searchInteraction.getAcB() != null) {
@@ -187,7 +194,7 @@ public class NetworkController {
                     registerNode(acToNode, edgesAndNodes,
                             searchInteraction.getAcB(), searchInteraction.getTaxIdB(), searchInteraction.getSpeciesB(), isCompound,
                             searchInteraction.getMoleculeB(), searchInteraction.getUniqueIdB(), searchInteraction.getIdB(),
-                            searchInteraction.getTypeB(), searchInteraction.getTypeMIB(), isMutated);
+                            searchInteraction.getTypeB(), searchInteraction.getTypeMIB(), isMutated, taxIdFacets, interactorTypeFacets);
                     if (isMutated) nodeMutated = true;
                 }
                 edgesAndNodes.add(networkEdgeGroup);
@@ -257,7 +264,8 @@ public class NetworkController {
     private void registerNode(Map<String, NetworkNode> acToNode, List<Object> edgesAndNodes,
                               String ac, Integer taxId, String species, boolean isCompound,
                               String molecule, String uniqueId, String id,
-                              String type, String typeMI, boolean isMutated) {
+                              String type, String typeMI, boolean isMutated,
+                              Set<String> taxIdFacets, Set<String> interactorTypeIdFacets) {
         if (!acToNode.containsKey(ac)) {
             NetworkNode networkNode = new NetworkNode();
             NetworkNodeGroup networkNodeGroup = new NetworkNodeGroup();
@@ -278,6 +286,8 @@ public class NetworkController {
             networkNode.setColor(taxonMapper.getStyleOf(taxId.toString()));
             networkNode.setShape(interactorTypeMapper.getStyleOf(typeMI));
             networkNode.setBorderColor(interactorMutationMapper.getStyleOf(isMutated));
+            taxIdFacets.add(taxId.toString()); // TODO: Remove on Solr faceting
+            interactorTypeIdFacets.add(typeMI); // TODO: Remove on Solr faceting
 
             networkNode.setClusterId(taxId);
             networkNode.setMutation(isMutated);

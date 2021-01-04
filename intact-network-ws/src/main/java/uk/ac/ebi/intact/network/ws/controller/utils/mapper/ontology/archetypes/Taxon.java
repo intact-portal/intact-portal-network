@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.network.ws.controller.utils.mapper.archetypes;
+package uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.archetypes;
 
 import java.awt.*;
 import java.util.List;
@@ -20,7 +20,7 @@ public enum Taxon implements Archetype<Color> {
     MAMMALS("40674", "Other mammals", false, new Color(86, 136, 192)),
     PLANTS("33090", "Other plants", false, new Color(80, 162, 79)),
     FUNGI("4751", "Other fungi", false, new Color(235, 144, 0)),
-    EUKARYOTA("2759", "Other eukaryote", false, new Color(188, 177, 148)),
+    EUKARYOTA("2759", "Other eukaryota", false, new Color(188, 177, 148)),
     BACTERIA("2", "Other bacteria", false, new Color(221, 67, 72)),
     ARCHAEA("2157", "Other archaea", false, new Color(172, 71, 101)),
     VIRUSES("10239", "Other viruses", false, new Color(132, 100, 190)),
@@ -28,6 +28,9 @@ public enum Taxon implements Archetype<Color> {
 
     public final String taxId;
     public final String descriptor;
+    /**
+     * If false, means it's probably a kingdom, or at least a higher taxon level than species
+     */
     public final boolean isSpecies;
     public final Color defaultColor;
     private static final Map<String, Taxon> taxIdToTaxons = new HashMap<>();
@@ -60,6 +63,11 @@ public enum Taxon implements Archetype<Color> {
         return taxIdToTaxons.get(taxId);
     }
 
+
+    @Override
+    public String getId() {
+        return taxId;
+    }
 
     @Override
     public String getName() {

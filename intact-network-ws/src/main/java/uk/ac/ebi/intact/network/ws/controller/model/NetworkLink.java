@@ -2,7 +2,6 @@ package uk.ac.ebi.intact.network.ws.controller.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.ac.ebi.intact.network.ws.controller.model.shapes.EdgeShape;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.archetypes.InteractionType;
 
 import java.awt.*;
 

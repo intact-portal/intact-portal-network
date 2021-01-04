@@ -7,11 +7,11 @@ import uk.ac.ebi.intact.network.ws.controller.utils.mapper.booleans.InteractionE
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.booleans.InteractionMutationMapper;
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.booleans.InteractorMutationMapper;
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.continuous.MIScoreMapper;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.InteractionTypeMapper;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.InteractorTypeMapper;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.TaxonMapper;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.impl.InteractionTypeMapper;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.impl.InteractorTypeMapper;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.impl.TaxonMapper;
 
-import java.util.List;
+import java.util.Collection;
 
 public class LegendBuilder {
     private final TaxonMapper taxonMapper;
@@ -39,20 +39,20 @@ public class LegendBuilder {
         this.interactionExpansionMapper = interactionExpansionMapper;
     }
 
-    public NetworkLegend createLegend(List<String> taxIds, List<String> nodeTypes, boolean nodeMutated, List<String> edgeTypes, boolean edgeExpanded, boolean edgeAffectedByMutation) {
+    public NetworkLegend createLegend(Collection<String> taxIds, Collection<String> nodeTypes, boolean nodeMutated, Collection<String> edgeTypes, boolean edgeExpanded, boolean edgeAffectedByMutation) {
         NetworkLegend legend = new NetworkLegend();
         setupNodeLegend(legend.getNodeLegend(), taxIds, nodeTypes, nodeMutated);
         setupEdgeLegend(legend.getEdgeLegend(), edgeTypes, edgeExpanded, edgeAffectedByMutation);
         return legend;
     }
 
-    private void setupNodeLegend(NetworkNodeLegend legend, List<String> taxIds, List<String> nodeTypes, boolean nodeMutated) {
+    private void setupNodeLegend(NetworkNodeLegend legend, Collection<String> taxIds, Collection<String> nodeTypes, boolean nodeMutated) {
         taxonMapper.setupNodeLegend(legend, taxIds);
         legend.setShape(interactorTypeMapper.createLegend(nodeTypes));
         legend.setBorderColors(interactorMutationMapper.createLegend(nodeMutated));
     }
 
-    private void setupEdgeLegend(NetworkEdgeLegend legend, List<String> edgeTypes, boolean edgeExpanded, boolean edgeAffectedByMutation) {
+    private void setupEdgeLegend(NetworkEdgeLegend legend, Collection<String> edgeTypes, boolean edgeExpanded, boolean edgeAffectedByMutation) {
         legend.setSummaryColors(miScoreMapper.createLegend());
         legend.setEvidenceColors(interactionTypeMapper.createLegend(edgeTypes));
         legend.setExpansion(interactionExpansionMapper.createLegend(edgeExpanded));

@@ -62,7 +62,7 @@
         </dependency>
         <dependency>
             <groupId>uk.ac.ebi.intact.search.interactions</groupId>
-            <artifactId>intact-search-interactions-ws</artifactId>
+            <artifactId>intact-search-interactions-service</artifactId>
             <version>1.0.6-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

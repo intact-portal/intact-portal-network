@@ -10,11 +10,11 @@ public class InteractionExpansionMapper extends BooleanMapper<EdgeShape> {
 
     @Override
     public String getTrueLabel() {
-        return "Spoke expanded";
+        return "Expanded";
     }
 
     @Override
     public String getFalseLabel() {
-        return "Binary interaction";
+        return "Not expanded";
     }
 }
