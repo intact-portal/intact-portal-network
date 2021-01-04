@@ -1,11 +1,9 @@
-package uk.ac.ebi.intact.network.ws.controller.utils.mapper;
+package uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology;
 
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.Mapper;
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.archetypes.Archetype;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import static java.util.stream.Collectors.*;
 
@@ -15,13 +13,22 @@ import static java.util.stream.Collectors.*;
  * @param <K> Key of mapping, faceted by solr and used as source for the mapping
  * @param <A> Archetype, an Enum describing specific nodes in an ontology to summarize all its closest children, and link them with their style
  */
-public abstract class AbstractMapper<K, A extends Archetype<P>, P> {
-    private final Map<K, A> keyToArchetype = new HashMap<>();
+public abstract class AbstractOntologyMapper<K, A extends Archetype<P>, P> implements Mapper<K, P> {
+    private Map<K, A> keyToArchetype = new HashMap<>();
 
     protected abstract TreeNode<K> getRootOfOntology();
 
+    /**
+     * Walk through the ontology to index keys to their related archetypes.
+     * Must be called at service initiation.
+     * Support reindexing.
+     */
     public void indexTree() {
-        indexRecursively(getRootOfOntology(), null);
+        if (keyToArchetype.isEmpty()) {
+            indexRecursively(getRootOfOntology(), null, keyToArchetype);
+        } else  {
+            keyToArchetype = indexRecursively(getRootOfOntology(), null, new HashMap<>());
+        }
     }
 
 
@@ -31,14 +38,15 @@ public abstract class AbstractMapper<K, A extends Archetype<P>, P> {
      */
     protected abstract A matchArchetype(K key);
 
-    private void indexRecursively(TreeNode<K> sourceNode, A archetype) {
+    private Map<K, A> indexRecursively(TreeNode<K> sourceNode, A archetype, Map<K, A> mapping) {
         K key = sourceNode.getData();
         A currentArchetype = matchArchetype(key);
         if (currentArchetype == null) currentArchetype = archetype;
-        if (currentArchetype != null) keyToArchetype.put(key, currentArchetype);
+        if (currentArchetype != null) mapping.put(key, currentArchetype);
         for (TreeNode<K> child : sourceNode.getChildren()) {
-            indexRecursively(child, currentArchetype);
+            indexRecursively(child, currentArchetype, mapping);
         }
+        return mapping;
     }
 
     public A getArchetype(K key) {
@@ -48,7 +56,7 @@ public abstract class AbstractMapper<K, A extends Archetype<P>, P> {
         return getArchetype(key).getVisualProperty();
     }
 
-    protected Map<String, P> createLegend(Collection<K> facets) {
+    public SortedMap<String, P> createLegend(Collection<K> facets) {
         return facets.stream()
                 .map(this::getArchetype)
                 .distinct()

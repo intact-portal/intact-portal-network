@@ -1,8 +1,7 @@
-package uk.ac.ebi.intact.network.ws.controller.utils;
+package uk.ac.ebi.intact.network.ws.controller.model.shapes;
 
-/**
- * Created by anjali on 12/09/19.
- */
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum NodeShape {
     TRIANGLE("triangle"), // Bioactive Entity
     DIAMOND("diamond"), // RNA
@@ -14,6 +13,7 @@ public enum NodeShape {
     OCTAGON("octagon"),
     HEXAGON("hexagon");
 
+    @JsonValue
     public final String title;
 
     NodeShape(String title) {

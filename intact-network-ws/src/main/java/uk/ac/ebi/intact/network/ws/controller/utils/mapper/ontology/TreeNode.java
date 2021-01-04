@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.network.ws.controller.utils.mapper;
+package uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology;
 
 import java.util.Collection;
 

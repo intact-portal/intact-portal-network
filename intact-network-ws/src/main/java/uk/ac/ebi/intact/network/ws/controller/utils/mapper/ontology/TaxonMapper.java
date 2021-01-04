@@ -1,23 +1,25 @@
-package uk.ac.ebi.intact.network.ws.controller.utils.mapper.impl;
+package uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology;
 
 
-import com.sun.tools.javac.util.List;
+
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.util.OWLOntologyWalker;
 import org.semanticweb.owlapi.util.OWLOntologyWalkerVisitor;
 import uk.ac.ebi.intact.network.ws.controller.model.legend.NetworkNodeLegend;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.AbstractMapper;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.TreeNode;
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.archetypes.Taxon;
 
 import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Map;
+import java.util.Collections;
+import java.util.SortedMap;
 
-public class TaxonMapper extends AbstractMapper<String, Taxon, Color> {
+public class TaxonMapper extends AbstractOntologyMapper<String, Taxon, Color> {
 
     @Override
     protected TreeNode<String> getRootOfOntology() {
@@ -26,7 +28,7 @@ public class TaxonMapper extends AbstractMapper<String, Taxon, Color> {
             URL taxonomyUrl = new URL("https://www.ebi.ac.uk/ols/ontologies/ncbitaxon/download");
             OWLOntologyManager m = OWLManager.createOWLOntologyManager();
             OWLOntology ontology = m.loadOntologyFromOntologyDocument(taxonomyUrl.openStream());
-            OWLOntologyWalker walker = new OWLOntologyWalker(List.of(ontology));
+            OWLOntologyWalker walker = new OWLOntologyWalker(Collections.singletonList(ontology));
             OWLOntologyWalkerVisitor visitor = new OWLOntologyWalkerVisitor(walker) {
                 @Override
                 public void visit(OWLObjectSomeValuesFrom desc) {
@@ -50,18 +52,18 @@ public class TaxonMapper extends AbstractMapper<String, Taxon, Color> {
 
     @Override
     @Deprecated
-    protected Map<String, Color> createLegend(Collection<String> facets) {
+    public SortedMap<String, Color> createLegend(Collection<String> facets) {
         return super.createLegend(facets);
     }
 
-    public void setupNodeLegend(NetworkNodeLegend legend, Collection<String> taxIds) {
+    public NetworkNodeLegend setupNodeLegend(NetworkNodeLegend legend, Collection<String> taxIds) {
         taxIds.stream()
                 .map(this::getArchetype)
                 .distinct()
                 .forEach(taxon -> {
-                    if (taxon.isSpecies) legend.getNodeSpeciesColor().put(taxon.descriptor, taxon.defaultColor);
-                    else legend.getNodeKingdomsColor().put(taxon.descriptor, taxon.defaultColor);
+                    if (taxon.isSpecies) legend.getSpeciesColors().put(taxon.getName(), taxon.getVisualProperty());
+                    else legend.getKingdomsColors().put(taxon.getName(), taxon.getVisualProperty());
                 });
+        return legend;
     }
-
 }

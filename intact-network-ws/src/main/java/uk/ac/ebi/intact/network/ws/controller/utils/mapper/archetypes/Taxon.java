@@ -1,7 +1,5 @@
 package uk.ac.ebi.intact.network.ws.controller.utils.mapper.archetypes;
 
-import org.apache.commons.math3.geometry.spherical.oned.Arc;
-
 import java.awt.*;
 import java.util.List;
 import java.util.*;

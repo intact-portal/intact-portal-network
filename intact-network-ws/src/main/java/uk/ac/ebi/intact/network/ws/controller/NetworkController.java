@@ -4,25 +4,34 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
+import org.springframework.data.solr.core.query.result.FacetFieldEntry;
+import org.springframework.data.solr.core.query.result.FacetPage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.ac.ebi.intact.network.ws.controller.model.*;
-import uk.ac.ebi.intact.network.ws.controller.utils.ColourCodes;
-import uk.ac.ebi.intact.network.ws.controller.utils.NodeShape;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.StyleMapper;
+import uk.ac.ebi.intact.network.ws.controller.model.shapes.NodeShape;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.LegendBuilder;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.booleans.InteractionExpansionMapper;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.booleans.InteractionMutationMapper;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.booleans.InteractorMutationMapper;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.continuous.MIScoreMapper;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.InteractionTypeMapper;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.InteractorTypeMapper;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.TaxonMapper;
 import uk.ac.ebi.intact.search.interactions.model.SearchInteraction;
+import uk.ac.ebi.intact.search.interactions.model.SearchInteractionFields;
 import uk.ac.ebi.intact.search.interactions.service.InteractionSearchService;
+import uk.ac.ebi.intact.search.interactions.model.NetworkQuery;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -36,6 +45,21 @@ public class NetworkController {
     //TODO temporary
     public static final String UPLOADED_BATCH_FILE_PREFIX = "file_";
     private static final Log log = LogFactory.getLog(NetworkController.class);
+
+    private static final TaxonMapper taxonMapper = new TaxonMapper();
+    private static final InteractorTypeMapper interactorTypeMapper = new InteractorTypeMapper();
+    private static final InteractorMutationMapper interactorMutationMapper = new InteractorMutationMapper();
+
+    private static final MIScoreMapper miScoreMapper = new MIScoreMapper();
+    private static final InteractionExpansionMapper interactionExpansionMapper = new InteractionExpansionMapper();
+    private static final InteractionTypeMapper interactionTypeMapper = new InteractionTypeMapper();
+    private static final InteractionMutationMapper interactionMutationMapper = new InteractionMutationMapper();
+
+    private static final LegendBuilder legendBuilder = new LegendBuilder(taxonMapper, interactorTypeMapper,
+            interactionTypeMapper, miScoreMapper, interactionMutationMapper,
+            interactorMutationMapper, interactionExpansionMapper);
+
+
     @Value("${server.upload.batch.file.path}")
     private String uploadBatchFilePath;
 
@@ -85,7 +109,7 @@ public class NetworkController {
         if (interactionsCount > 1300) {
             httpStatus = HttpStatus.FORBIDDEN;
         } else {
-            Page<SearchInteraction> interactions = interactionSearchService.findInteractionForGraphJsonWithFacet(
+            FacetPage<SearchInteraction> interactions = interactionSearchService.findInteractionForGraphJsonWithFacet(
                     extractSearchTerms(query),
                     batchSearch,
                     interactorSpeciesFilter,
@@ -100,27 +124,26 @@ public class NetworkController {
                     page,
                     pageSize);
 
-            networkJson = toCytoscapeJsonFormat(interactions.getContent(), isCompound);
+            ;
+            networkJson = toCytoscapeJsonFormat(interactions.getContent(), isCompound,
+                    interactions.getFacetResultPage(SearchInteractionFields.SPECIES_A_B_STR).get().map(FacetFieldEntry::getValue).collect(Collectors.toList()), //TODO Replace by taxids of A and B
+                    interactions.getFacetResultPage(SearchInteractionFields.TYPE_MI_IDENTIFIER).get().map(FacetFieldEntry::getValue).collect(Collectors.toList()),
+                    interactions.getFacetResultPage(SearchInteractionFields.TYPE_MI_A).get().map(FacetFieldEntry::getValue).collect(Collectors.toList()) //TODO replace by a faceting of both A and B
+            );
         }
         //initialising empty json if request is forbidden
-        networkJson = (networkJson == null) ? new NetworkJson(new ArrayList<Object>()) : networkJson;
+        networkJson = (networkJson == null) ? new NetworkJson() : networkJson;
 
-        return new ResponseEntity<NetworkJson>(networkJson, httpStatus);
+        return new ResponseEntity<>(networkJson, httpStatus);
     }
 
-    private NetworkJson toCytoscapeJsonFormat(List<SearchInteraction> interactions, boolean isCompound) {
+    private NetworkJson toCytoscapeJsonFormat(List<SearchInteraction> interactions, boolean isCompound, List<String> taxIdFacets, List<String> interactionTypeFacets, List<String> interactorTypeFacets) {
         List<Object> edgesAndNodes = new ArrayList<>();
-        HashMap<String, NetworkNode> interactorAcAndNodeMap = new HashMap<String, NetworkNode>();
-        HashSet<String> specieSet = new HashSet<>();
+        Map<String, NetworkNode> acToNode = new HashMap<>();
+        boolean nodeMutated = false;
+        boolean edgeExpanded = false;
+        boolean edgeAffectedByMutation = false;
 
-        Set<String> taxIds = new HashSet<>();
-        interactions.forEach(searchInteraction -> {
-            Integer taxIdA = searchInteraction.getTaxIdA();
-            if (taxIdA != null) taxIds.add(taxIdA.toString());
-            Integer taxIdB = searchInteraction.getTaxIdB();
-            if (taxIdB != null) taxIds.add(taxIdB.toString());
-        });
-        StyleMapper.harvestKingdomsOf(taxIds, true);
 
         for (SearchInteraction searchInteraction : interactions) {
             try {
@@ -136,82 +159,36 @@ public class NetworkController {
                 networkLink.setInteractionAc(searchInteraction.getAc());
                 networkLink.setInteractionType(searchInteraction.getType());
                 networkLink.setInteractionDetectionMethod(searchInteraction.getDetectionMethod());
-                networkLink.setColor(StyleMapper.getColorForInteractionType(searchInteraction.getTypeMIIdentifier()));
-                networkLink.setCollapsedColor(StyleMapper.getColorForCollapsedEdgeDiscrete(searchInteraction.getIntactMiscore()));
-                networkLink.setShape(StyleMapper.getShapeForExpansionType(searchInteraction.getExpansionMethod()));
-                networkLink.setAffectedByMutation(searchInteraction.isDisruptedByMutation());
+
+                networkLink.setColor(interactionTypeMapper.getStyleOf(searchInteraction.getTypeMIIdentifier()));
+                networkLink.setCollapsedColor(miScoreMapper.getStyleOf(searchInteraction.getIntactMiscore()));
+                boolean spokeExpanded = searchInteraction.getExpansionMethod().equals("spoke expansion");
+                if (spokeExpanded) edgeExpanded = true;
+                networkLink.setShape(interactionExpansionMapper.getStyleOf(spokeExpanded));
+
+                boolean affectedByMutation = searchInteraction.isDisruptedByMutation();
+                if (affectedByMutation) edgeAffectedByMutation = true;
+                networkLink.setAffectedByMutation(affectedByMutation);
                 networkLink.setMiScore(searchInteraction.getIntactMiscore());
                 networkEdgeGroup.setInteraction(networkLink);
 
                 if (searchInteraction.getAcA() != null) {
-                    if (!interactorAcAndNodeMap.containsKey(searchInteraction.getAcA())) {
-                        NetworkNode networkNode = new NetworkNode();
-                        NetworkNodeGroup networkNodeGroup = new NetworkNodeGroup();
-                        String parentTaxId = searchInteraction.getTaxIdA() + "";
-                        networkNode.setId(searchInteraction.getAcA());
-                        networkNode.setSpeciesName(searchInteraction.getSpeciesA());
-                        networkNode.setTaxId(searchInteraction.getTaxIdA());
-                        if (isCompound) {
-                            if (!specieSet.contains(parentTaxId)) {
-                                specieSet.add(parentTaxId);
-                                edgesAndNodes.add(createMetaNode(parentTaxId, searchInteraction.getSpeciesA()));
-                            }
-                            networkNode.setParent(parentTaxId);
-                        }
-                        networkNode.setInteractorId(StyleMapper.createNodeLabel(searchInteraction.getMoleculeA(),
-                                searchInteraction.getUniqueIdA(), searchInteraction.getAcA()));
-                        networkNode.setPreferredId(searchInteraction.getIdA());
-                        networkNode.setPreferredIdWithDB(searchInteraction.getIdA());
-                        networkNode.setInteractorType(searchInteraction.getTypeA());
-                        networkNode.setPreferredId(searchInteraction.getUniqueIdA());
-                        networkNode.setInteractorName(searchInteraction.getMoleculeA());
-                        networkNode.setColor(StyleMapper.getColorForTaxId(searchInteraction.getTaxIdA()));
-                        networkNode.setShape(StyleMapper.getShapeForInteractorType(searchInteraction.getTypeMIA()));
-                        networkNode.setClusterId(searchInteraction.getTaxIdA());
-                        networkNode.setMutation(searchInteraction.isMutationA());
-                        networkNodeGroup.setInteractor(networkNode);
+                    boolean isMutated = searchInteraction.isMutationA();
+                    registerNode(acToNode, edgesAndNodes,
+                            searchInteraction.getAcA(), searchInteraction.getTaxIdA(), searchInteraction.getSpeciesA(), isCompound,
+                            searchInteraction.getMoleculeA(), searchInteraction.getUniqueIdA(), searchInteraction.getIdA(),
+                            searchInteraction.getTypeA(), searchInteraction.getTypeMIA(), isMutated);
+                    if (isMutated) nodeMutated = true;
 
-                        interactorAcAndNodeMap.put(searchInteraction.getAcA(), networkNode);
-                        edgesAndNodes.add(networkNodeGroup);
-                    } else if (searchInteraction.isMutationA()) {
-                        NetworkNode existingNetworkNode = interactorAcAndNodeMap.get(searchInteraction.getAcA());
-                        existingNetworkNode.setMutation(searchInteraction.isMutationA());
-                    }
                 }
 
                 if (searchInteraction.getAcB() != null) {
-                    if (!interactorAcAndNodeMap.keySet().contains(searchInteraction.getAcB())) {
-                        NetworkNode networkNode = new NetworkNode();
-                        NetworkNodeGroup networkNodeGroup = new NetworkNodeGroup();
-                        String parentTaxId = searchInteraction.getTaxIdB() + "";
-                        networkNode.setId(searchInteraction.getAcB());
-                        networkNode.setSpeciesName(searchInteraction.getSpeciesB());
-                        networkNode.setTaxId(searchInteraction.getTaxIdB());
-                        if (isCompound) {
-                            if (!specieSet.contains(parentTaxId)) {
-                                specieSet.add(parentTaxId);
-                                edgesAndNodes.add(createMetaNode(parentTaxId, searchInteraction.getSpeciesB()));
-                            }
-                            networkNode.setParent(parentTaxId);
-                        }
-                        networkNode.setInteractorId(StyleMapper.createNodeLabel(searchInteraction.getMoleculeB(),
-                                searchInteraction.getUniqueIdB(), searchInteraction.getAcB()));
-                        networkNode.setPreferredId(searchInteraction.getIdB());
-                        networkNode.setPreferredIdWithDB(searchInteraction.getIdB());
-                        networkNode.setInteractorType(searchInteraction.getTypeB());
-                        networkNode.setPreferredId(searchInteraction.getUniqueIdB());
-                        networkNode.setInteractorName(searchInteraction.getMoleculeB());
-                        networkNode.setColor(StyleMapper.getColorForTaxId(searchInteraction.getTaxIdB()));
-                        networkNode.setShape(StyleMapper.getShapeForInteractorType(searchInteraction.getTypeMIB()));
-                        networkNode.setClusterId(searchInteraction.getTaxIdB());
-                        networkNode.setMutation(searchInteraction.isMutationB());
-                        networkNodeGroup.setInteractor(networkNode);
-                        interactorAcAndNodeMap.put(searchInteraction.getAcB(), networkNode);
-                        edgesAndNodes.add(networkNodeGroup);
-                    } else if (searchInteraction.isMutationB()) {
-                        NetworkNode existingNetworkNode = interactorAcAndNodeMap.get(searchInteraction.getAcB());
-                        existingNetworkNode.setMutation(searchInteraction.isMutationB());
-                    }
+                    boolean isMutated = searchInteraction.isMutationB();
+                    registerNode(acToNode, edgesAndNodes,
+                            searchInteraction.getAcB(), searchInteraction.getTaxIdB(), searchInteraction.getSpeciesB(), isCompound,
+                            searchInteraction.getMoleculeB(), searchInteraction.getUniqueIdB(), searchInteraction.getIdB(),
+                            searchInteraction.getTypeB(), searchInteraction.getTypeMIB(), isMutated);
+                    if (isMutated) nodeMutated = true;
                 }
                 edgesAndNodes.add(networkEdgeGroup);
             } catch (Exception e) {
@@ -223,17 +200,17 @@ public class NetworkController {
             }
         }
 
-        return new NetworkJson(edgesAndNodes);
+        return new NetworkJson(edgesAndNodes, legendBuilder.createLegend(taxIdFacets, interactorTypeFacets, nodeMutated, interactionTypeFacets, edgeExpanded, edgeAffectedByMutation));
     }
 
     public NetworkNodeGroup createMetaNode(String parentTaxId, String species) {
         NetworkNode graphCompoundNode = new NetworkNode();
         NetworkNodeGroup graphCompoundNodeGroup = new NetworkNodeGroup();
         graphCompoundNode.setId(parentTaxId);
-        graphCompoundNode.setColor(ColourCodes.META_NODE);
+        graphCompoundNode.setColor(new Color(220, 220, 220));
         graphCompoundNode.setSpeciesName(species);
         graphCompoundNodeGroup.setInteractor(graphCompoundNode);
-        graphCompoundNode.setShape(NodeShape.ELLIPSE.title);
+        graphCompoundNode.setShape(NodeShape.ELLIPSE);
 
         return graphCompoundNodeGroup;
     }
@@ -267,5 +244,50 @@ public class NetworkController {
         }
 
         return searchTerms.toString();
+    }
+
+    private String createNodeLabel(String preferredName, String preferredId, String interactorAc) {
+        if (preferredName != null) {
+            return preferredName + " (" + preferredId + ")";
+        } else {
+            return interactorAc;
+        }
+    }
+
+    private void registerNode(Map<String, NetworkNode> acToNode, List<Object> edgesAndNodes,
+                              String ac, Integer taxId, String species, boolean isCompound,
+                              String molecule, String uniqueId, String id,
+                              String type, String typeMI, boolean isMutated) {
+        if (!acToNode.containsKey(ac)) {
+            NetworkNode networkNode = new NetworkNode();
+            NetworkNodeGroup networkNodeGroup = new NetworkNodeGroup();
+            String parentTaxId = taxId + "";
+            networkNode.setId(ac);
+            networkNode.setSpeciesName(species);
+            networkNode.setTaxId(taxId);
+            if (isCompound) {
+                edgesAndNodes.add(createMetaNode(parentTaxId, species));
+                networkNode.setParent(parentTaxId);
+            }
+            networkNode.setInteractorId(createNodeLabel(molecule, uniqueId, ac));
+            networkNode.setPreferredIdWithDB(id);
+            networkNode.setInteractorType(type);
+            networkNode.setPreferredId(uniqueId);
+            networkNode.setInteractorName(molecule);
+
+            networkNode.setColor(taxonMapper.getStyleOf(taxId.toString()));
+            networkNode.setShape(interactorTypeMapper.getStyleOf(typeMI));
+            networkNode.setBorderColor(interactorMutationMapper.getStyleOf(isMutated));
+
+            networkNode.setClusterId(taxId);
+            networkNode.setMutation(isMutated);
+            networkNodeGroup.setInteractor(networkNode);
+
+            acToNode.put(ac, networkNode);
+            edgesAndNodes.add(networkNodeGroup);
+        } else if (isMutated) {
+            NetworkNode existingNetworkNode = acToNode.get(ac);
+            existingNetworkNode.setMutation(true);
+        }
     }
 }

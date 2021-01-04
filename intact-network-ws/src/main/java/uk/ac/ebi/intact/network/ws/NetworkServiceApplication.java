@@ -5,16 +5,19 @@ import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.solr.core.SolrOperations;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.repository.config.EnableSolrRepositories;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.StyleMapper;
+import uk.ac.ebi.intact.network.ws.controller.model.serializer.ColorDeserializer;
+import uk.ac.ebi.intact.network.ws.controller.model.serializer.ColorSerializer;
 
-@EnableSolrRepositories(basePackages = "uk.ac.ebi.intact.search",
-        schemaCreationSupport = true)
+import java.awt.*;
+
+@EnableSolrRepositories(basePackages = "uk.ac.ebi.intact.search", schemaCreationSupport = true)
 @SpringBootApplication(scanBasePackages = "uk.ac.ebi.intact")
 public class NetworkServiceApplication extends SpringBootServletInitializer {
 
@@ -42,13 +45,15 @@ public class NetworkServiceApplication extends SpringBootServletInitializer {
         return false;
     }
 
+    @Bean
+    public Jackson2ObjectMapperBuilderCustomizer jsonSerialization() {
+        return jacksonObjectMapperBuilder -> {
+            jacksonObjectMapperBuilder.deserializerByType(Color.class, new ColorDeserializer());
+            jacksonObjectMapperBuilder.serializerByType(Color.class, new ColorSerializer());
+        };
+    }
+
     public static void main(String[] args) {
-//        initializeSpeciesDescendantsMapping();
-//        initializeInteractorTypeDescendantsMapping();
-//        initializeInteractionTypeDescendantsMapping();
-        StyleMapper.initializeEdgeTypeToColor();
-        StyleMapper.initializeNodeTypeToShape();
-        StyleMapper.initializeSpeciesAndKingdomColors();
         SpringApplication.run(NetworkServiceApplication.class, args);
     }
 }

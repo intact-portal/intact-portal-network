@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.StyleMapper;
 
 import java.io.BufferedReader;
 import java.io.IOException;

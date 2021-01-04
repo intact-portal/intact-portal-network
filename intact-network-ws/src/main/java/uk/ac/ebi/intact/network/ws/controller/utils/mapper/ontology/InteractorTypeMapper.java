@@ -1,11 +1,9 @@
-package uk.ac.ebi.intact.network.ws.controller.utils.mapper.impl;
+package uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology;
 
-import uk.ac.ebi.intact.network.ws.controller.utils.NodeShape;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.AbstractMapper;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.TreeNode;
+import uk.ac.ebi.intact.network.ws.controller.model.shapes.NodeShape;
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.archetypes.InteractorType;
 
-public class InteractorTypeMapper extends AbstractMapper<String, InteractorType, NodeShape> {
+public class InteractorTypeMapper extends AbstractOntologyMapper<String, InteractorType, NodeShape> {
     @Override
     protected TreeNode<String> getRootOfOntology() {
         return null; //TODO Download from OLS
@@ -18,5 +16,4 @@ public class InteractorTypeMapper extends AbstractMapper<String, InteractorType,
         }
         return null;
     }
-
 }

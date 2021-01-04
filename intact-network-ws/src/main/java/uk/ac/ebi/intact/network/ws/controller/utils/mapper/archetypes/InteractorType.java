@@ -1,7 +1,7 @@
 package uk.ac.ebi.intact.network.ws.controller.utils.mapper.archetypes;
 
 
-import uk.ac.ebi.intact.network.ws.controller.utils.NodeShape;
+import uk.ac.ebi.intact.network.ws.controller.model.shapes.NodeShape;
 
 public enum InteractorType implements Archetype<NodeShape> {
     BIO_ACTIVE_ENTITY("bioactive entity", "MI_1100", NodeShape.TRIANGLE),

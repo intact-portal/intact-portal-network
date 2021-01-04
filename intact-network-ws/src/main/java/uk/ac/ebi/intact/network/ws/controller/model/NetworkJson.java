@@ -1,7 +1,9 @@
 package uk.ac.ebi.intact.network.ws.controller.model;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.ac.ebi.intact.network.ws.controller.model.legend.NetworkLegend;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,18 +11,33 @@ import java.util.List;
  */
 public class NetworkJson {
 
-    @JsonValue
-    private List<Object> compoundData;
+    @JsonProperty
+    private List<Object> data = new ArrayList<>();
 
-    public NetworkJson(List<Object> compoundData) {
-        this.compoundData = compoundData;
+    @JsonProperty
+    private NetworkLegend legend = new NetworkLegend();
+
+    public NetworkJson() {
     }
 
-    public List<Object> getCompoundData() {
-        return compoundData;
+    public NetworkJson(List<Object> data, NetworkLegend legend) {
+        this.data = data;
+        this.legend = legend;
     }
 
-    public void setCompoundData(List<Object> compoundData) {
-        this.compoundData = compoundData;
+    public List<Object> getData() {
+        return data;
+    }
+
+    public void setData(List<Object> data) {
+        this.data = data;
+    }
+
+    public NetworkLegend getLegend() {
+        return legend;
+    }
+
+    public void setLegend(NetworkLegend legend) {
+        this.legend = legend;
     }
 }
