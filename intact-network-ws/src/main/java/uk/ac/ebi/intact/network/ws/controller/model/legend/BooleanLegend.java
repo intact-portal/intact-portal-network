@@ -1,4 +1,4 @@
-package uk.ac.ebi.intact.network.ws.controller.utils.mapper.booleans;
+package uk.ac.ebi.intact.network.ws.controller.model.legend;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

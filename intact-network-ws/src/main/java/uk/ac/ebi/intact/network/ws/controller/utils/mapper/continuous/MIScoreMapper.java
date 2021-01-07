@@ -4,12 +4,12 @@ import uk.ac.ebi.intact.network.ws.controller.model.legend.Range;
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.Mapper;
 
 import java.awt.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class MIScoreMapper implements Mapper<Double, Color> {
-    TreeMap<Range, Color> miScoreColors = new TreeMap<>();
-
     public static final Color[] colors = {
             new Color(255, 255, 221),
             new Color(255, 248, 171),
@@ -28,8 +28,8 @@ public class MIScoreMapper implements Mapper<Double, Color> {
         return colors[(int) Math.floor(key * 10)];
     }
 
-    public SortedMap<Range, Color> createLegend() {
-        SortedMap<Range, Color> legend = new TreeMap<>();
+    public Map<Range, Color> createLegend() {
+        Map<Range, Color> legend = new LinkedHashMap<>();
         for (int i = 0; i < colors.length; i++) {
             double start = i / 10.0;
             legend.put(new Range(start, start + 0.1), colors[i]);

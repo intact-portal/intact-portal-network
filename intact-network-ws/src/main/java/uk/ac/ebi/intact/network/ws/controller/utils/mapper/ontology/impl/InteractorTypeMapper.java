@@ -26,4 +26,9 @@ public class InteractorTypeMapper extends AbstractOntologyMapper<InteractorType,
         }
         return null;
     }
+
+    @Override
+    public InteractorType getDefaultArchetype() {
+        return InteractorType.PROTEIN;
+    }
 }

@@ -14,7 +14,7 @@ public enum Taxon implements Archetype<Color> {
     S_CEREVISIAE("4932", "Saccharomyces cerevisiae", true, new Color(174, 131, 67)),
     E_COLI("562", "Escherichia coli", true, new Color(154, 55, 58)),
 
-    CHEMICAL_SYNTHESIS("-2", "Chemical Synthesis", true, new Color(141, 102, 102)),
+    CHEMICAL_SYNTHESIS("-2", "Chemical Synthesis", false, new Color(141, 102, 102)),
 
     ANIMALS("33208", "Other animals", false, new Color(62, 181, 170)),
     MAMMALS("40674", "Other mammals", false, new Color(86, 136, 192)),

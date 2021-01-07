@@ -27,4 +27,9 @@ public class InteractionTypeMapper extends AbstractOntologyMapper<InteractionTyp
         }
         return null;
     }
+
+    @Override
+    public InteractionType getDefaultArchetype() {
+        return InteractionType.ASSOCIATION;
+    }
 }

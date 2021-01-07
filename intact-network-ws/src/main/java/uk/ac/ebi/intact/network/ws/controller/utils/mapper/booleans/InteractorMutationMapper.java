@@ -10,7 +10,7 @@ public class InteractorMutationMapper extends BooleanMapper<Color> {
 
     @Override
     public Color getStyleOf(Boolean key) {
-        return key ? MUTATION_COLOR : null;
+        return key ? MUTATION_COLOR : Color.black;
     }
 
     @Override

@@ -1,13 +1,12 @@
 package uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.def;
 
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Scanner;
 
 public class OBOParser {
-    public static Ontology parseOntology(InputStream oboFile) throws FileNotFoundException {
+    public static Ontology parseOntology(InputStream oboFile, String idPrefix) {
         Ontology ontology = new Ontology();
         Map<String, Term> terms = ontology.getTerms();
         Scanner sc = new Scanner(oboFile);
@@ -21,6 +20,7 @@ public class OBOParser {
             } else if (currentTerm != null) {
                 if (line.startsWith("id: ")) {
                     String id = line.substring(4);
+                    if (idPrefix != null && id.startsWith(idPrefix)) id = id.substring(idPrefix.length());
                     if (terms.containsKey(id)) currentTerm = terms.get(id);
                     else currentTerm.setId(id);
                 } else if (line.startsWith("name: ")) {
@@ -29,17 +29,17 @@ public class OBOParser {
                     isObsolete = true;
                 } else if (line.startsWith("is_a: ")) {
                     String refString = line.substring(6);
-                    addParent(terms, currentTerm, refString);
+                    addParent(terms, currentTerm, refString, idPrefix);
                 } else if (line.startsWith("relationship: ")) {
                     String[] relationship = line.substring(14).split(" ", 2);
                     switch (relationship[0]) {
                         case "has_functional_parent":
                         case "derives_from":
                         case "part_of":
-                            addParent(terms, currentTerm, relationship[1]);
+                            addParent(terms, currentTerm, relationship[1], idPrefix);
                             break;
                         case "contains":
-                            addChild(terms, currentTerm, relationship[1]);
+                            addChild(terms, currentTerm, relationship[1], idPrefix);
                             break;
                     }
                 } else if (line.isEmpty()) {
@@ -62,26 +62,27 @@ public class OBOParser {
         ontology.setRoot(term);
     }
 
-    private static void addParent(Map<String, Term> terms, Term currentTerm, String parentRef) {
-        Term parent = getOrCreateTermFromRef(terms, parentRef);
+    private static void addParent(Map<String, Term> terms, Term currentTerm, String parentRef, String idPrefix) {
+        Term parent = getOrCreateTermFromRef(terms, parentRef, idPrefix);
         parent.getChildren().add(currentTerm);
         currentTerm.getParents().add(parent);
     }
 
-    private static void addChild(Map<String, Term> terms, Term currentTerm, String childRef) {
-        Term child = getOrCreateTermFromRef(terms, childRef);
+    private static void addChild(Map<String, Term> terms, Term currentTerm, String childRef, String idPrefix) {
+        Term child = getOrCreateTermFromRef(terms, childRef, idPrefix);
         child.getParents().add(currentTerm);
         currentTerm.getChildren().add(child);
     }
 
-    private static Term getOrCreateTermFromRef(Map<String, Term> terms, String childRef) {
+    private static Term getOrCreateTermFromRef(Map<String, Term> terms, String childRef, String idPrefix) {
         String[] refElements = childRef.split(" ! ");
         String id = refElements[0];
+        if (idPrefix != null && id.startsWith(idPrefix)) id = id.substring(idPrefix.length());
         Term child;
         if (terms.containsKey(id)) {
             child = terms.get(id);
         } else {
-            child = new Term(refElements[0], refElements[1]);
+            child = new Term(id, refElements[1]);
             terms.put(id, child);
         }
         return child;

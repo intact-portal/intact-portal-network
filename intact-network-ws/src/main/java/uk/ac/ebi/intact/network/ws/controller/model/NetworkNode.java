@@ -2,6 +2,8 @@ package uk.ac.ebi.intact.network.ws.controller.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.ac.ebi.intact.network.ws.controller.model.shapes.NodeShape;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.archetypes.Archetype;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.archetypes.Taxon;
 
 import java.awt.*;
 
@@ -21,6 +23,9 @@ public class NetworkNode {
 
     @JsonProperty("color")
     private Color color;
+
+    @JsonProperty("color_archetype")
+    private Archetype<Color> colorArchetype;
 
     @JsonProperty("border_color")
     private Color borderColor;
@@ -82,6 +87,14 @@ public class NetworkNode {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public Archetype<Color> getColorArchetype() {
+        return colorArchetype;
+    }
+
+    public void setColorArchetype(Archetype<Color> colorArchetype) {
+        this.colorArchetype = colorArchetype;
     }
 
     public Color getBorderColor() {

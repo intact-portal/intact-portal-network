@@ -12,8 +12,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.solr.core.SolrOperations;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.repository.config.EnableSolrRepositories;
+import uk.ac.ebi.intact.network.ws.controller.model.serializer.ArchetypeSerializer;
 import uk.ac.ebi.intact.network.ws.controller.model.serializer.ColorDeserializer;
 import uk.ac.ebi.intact.network.ws.controller.model.serializer.ColorSerializer;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.archetypes.Archetype;
 
 import java.awt.*;
 
@@ -50,6 +52,7 @@ public class NetworkServiceApplication extends SpringBootServletInitializer {
         return mapperBuilder -> {
             mapperBuilder.deserializerByType(Color.class, new ColorDeserializer());
             mapperBuilder.serializerByType(Color.class, new ColorSerializer());
+            mapperBuilder.serializerByType(Archetype.class, new ArchetypeSerializer());
         };
     }
 

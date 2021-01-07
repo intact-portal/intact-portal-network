@@ -2,52 +2,60 @@ package uk.ac.ebi.intact.network.ws.controller.model.legend;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.ac.ebi.intact.network.ws.controller.model.shapes.NodeShape;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.booleans.BooleanLegend;
 
 import java.awt.*;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class NetworkNodeLegend {
     @JsonProperty
-    private SortedMap<String, NodeShape> shape = new TreeMap<>();
-    @JsonProperty("species_colors")
-    private SortedMap<String, Color> speciesColors = new TreeMap<>();
-    @JsonProperty("kingdoms_colors")
-    private SortedMap<String, Color> kingdomsColors = new TreeMap<>();
-    @JsonProperty("border_colors")
-    private SortedMap<Boolean, BooleanLegend<Color>> borderColors = new TreeMap<>();
+    private Map<String, NodeShape> shape = new LinkedHashMap<>();
+    @JsonProperty("species_color")
+    private Map<String, Color> speciesColor = new LinkedHashMap<>();
+    @JsonProperty("kingdom_color")
+    private Map<String, Color> kingdomColor = new LinkedHashMap<>();
+    @JsonProperty("border_color")
+    private Map<Boolean, BooleanLegend<Color>> borderColor = new LinkedHashMap<>();
+    @JsonProperty("border_width")
+    private Map<Boolean, BooleanLegend<Integer>> borderWidth= new LinkedHashMap<>();
 
-
-    public SortedMap<String, Color> getSpeciesColors() {
-        return speciesColors;
-    }
-
-    public void setSpeciesColors(SortedMap<String, Color> speciesColors) {
-        this.speciesColors = speciesColors;
-    }
-
-    public SortedMap<String, Color> getKingdomsColors() {
-        return kingdomsColors;
-    }
-
-    public void setKingdomsColors(SortedMap<String, Color> kingdomsColors) {
-        this.kingdomsColors = kingdomsColors;
-    }
-
-    public SortedMap<String, NodeShape> getShape() {
+    public Map<String, NodeShape> getShape() {
         return shape;
     }
 
-    public void setShape(SortedMap<String, NodeShape> shape) {
+    public void setShape(Map<String, NodeShape> shape) {
         this.shape = shape;
     }
 
-    public SortedMap<Boolean, BooleanLegend<Color>> getBorderColors() {
-        return borderColors;
+    public Map<String, Color> getSpeciesColor() {
+        return speciesColor;
     }
 
-    public void setBorderColors(SortedMap<Boolean, BooleanLegend<Color>> borderColors) {
-        this.borderColors = borderColors;
+    public void setSpeciesColor(Map<String, Color> speciesColor) {
+        this.speciesColor = speciesColor;
+    }
+
+    public Map<String, Color> getKingdomColor() {
+        return kingdomColor;
+    }
+
+    public void setKingdomColor(Map<String, Color> kingdomColor) {
+        this.kingdomColor = kingdomColor;
+    }
+
+    public Map<Boolean, BooleanLegend<Color>> getBorderColor() {
+        return borderColor;
+    }
+
+    public void setBorderColor(Map<Boolean, BooleanLegend<Color>> borderColor) {
+        this.borderColor = borderColor;
+    }
+
+    public Map<Boolean, BooleanLegend<Integer>> getBorderWidth() {
+        return borderWidth;
+    }
+
+    public void setBorderWidth(Map<Boolean, BooleanLegend<Integer>> borderWidth) {
+        this.borderWidth = borderWidth;
     }
 }

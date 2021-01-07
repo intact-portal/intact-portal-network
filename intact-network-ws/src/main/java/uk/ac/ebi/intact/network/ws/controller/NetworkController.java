@@ -12,10 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import uk.ac.ebi.intact.network.ws.controller.model.*;
 import uk.ac.ebi.intact.network.ws.controller.model.shapes.NodeShape;
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.LegendBuilder;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.booleans.InteractionExpansionMapper;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.booleans.InteractionMutationMapper;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.booleans.InteractorMutationMapper;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.booleans.*;
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.continuous.MIScoreMapper;
+import uk.ac.ebi.intact.network.ws.controller.utils.mapper.continuous.SummaryEdgeWidthMapper;
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.impl.InteractionTypeMapper;
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.impl.InteractorTypeMapper;
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.impl.MIOntology;
@@ -50,15 +49,19 @@ public class NetworkController {
     private static final MIOntology miOntology = new MIOntology();
     private static final InteractorTypeMapper interactorTypeMapper = new InteractorTypeMapper(miOntology);
     private static final InteractorMutationMapper interactorMutationMapper = new InteractorMutationMapper();
+    private static final InteractorMutationBorderWidthMapper interactorMutationBorderWidthMapper = new InteractorMutationBorderWidthMapper();
 
     private static final MIScoreMapper miScoreMapper = new MIScoreMapper();
     private static final InteractionExpansionMapper interactionExpansionMapper = new InteractionExpansionMapper();
     private static final InteractionTypeMapper interactionTypeMapper = new InteractionTypeMapper(miOntology);
-    private static final InteractionMutationMapper interactionMutationMapper = new InteractionMutationMapper();
+    private static final InteractionMutationColorMapper interactionMutationColorMapper = new InteractionMutationColorMapper();
+    private static final InteractionMutationWidthMapper interactionMutationWidthMapper = new InteractionMutationWidthMapper();
+    private static final SummaryEdgeWidthMapper summaryEdgeWidthMapper = new SummaryEdgeWidthMapper();
 
     private static final LegendBuilder legendBuilder = new LegendBuilder(taxonMapper, interactorTypeMapper,
-            interactionTypeMapper, miScoreMapper, interactionMutationMapper,
-            interactorMutationMapper, interactionExpansionMapper);
+            interactionTypeMapper, miScoreMapper, interactionMutationColorMapper,
+            interactionMutationWidthMapper, interactorMutationMapper, interactorMutationBorderWidthMapper,
+            interactionExpansionMapper, summaryEdgeWidthMapper);
 
 
     @Value("${server.upload.batch.file.path}")
@@ -125,7 +128,6 @@ public class NetworkController {
                     page,
                     pageSize);
 
-            ;
             networkJson = toCytoscapeJsonFormat(interactions.getContent(), isCompound,
                     interactions.getFacetResultPage(SearchInteractionFields.SPECIES_A_B_STR).get().map(FacetFieldEntry::getValue).collect(Collectors.toSet()), //TODO Replace by taxids of A and B
                     interactions.getFacetResultPage(SearchInteractionFields.TYPE_MI_IDENTIFIER).get().map(FacetFieldEntry::getValue).collect(Collectors.toSet()),
@@ -169,8 +171,8 @@ public class NetworkController {
 
                 networkLink.setColor(interactionTypeMapper.getStyleOf(searchInteraction.getTypeMIIdentifier()));
                 networkLink.setCollapsedColor(miScoreMapper.getStyleOf(searchInteraction.getIntactMiscore()));
-                interactionTypeFacets.add(searchInteraction.getType()); // TODO: Remove on Solr faceting
-                boolean spokeExpanded = searchInteraction.getExpansionMethod().equals("spoke expansion");
+                interactionTypeFacets.add(searchInteraction.getTypeMIIdentifier()); // TODO: Remove on Solr faceting
+                boolean spokeExpanded = searchInteraction.getExpansionMethod() != null;
                 if (spokeExpanded) edgeExpanded = true;
                 networkLink.setShape(interactionExpansionMapper.getStyleOf(spokeExpanded));
 
@@ -199,11 +201,12 @@ public class NetworkController {
                 }
                 edgesAndNodes.add(networkEdgeGroup);
             } catch (Exception e) {
-                log.info("Interaction with id: " + searchInteraction.getAcB() + " failed to process" +
+                log.info("Interaction with ac: " + searchInteraction.getAc() + " failed to process" +
                         " and therefore this interaction will not be in graph json");
                 log.error(e.getMessage());
+                log.error(Arrays.toString(e.getStackTrace()));
                 //TODO... Uncomment following
-                //throw e;
+                throw e;
             }
         }
 
@@ -284,6 +287,7 @@ public class NetworkController {
             networkNode.setInteractorName(molecule);
 
             networkNode.setColor(taxonMapper.getStyleOf(taxId.toString()));
+            networkNode.setColorArchetype(taxonMapper.getArchetype(taxId.toString()));
             networkNode.setShape(interactorTypeMapper.getStyleOf(typeMI));
             networkNode.setBorderColor(interactorMutationMapper.getStyleOf(isMutated));
             taxIdFacets.add(taxId.toString()); // TODO: Remove on Solr faceting

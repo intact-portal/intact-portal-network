@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.network.ws.controller.utils.mapper.booleans;
 
 
+import uk.ac.ebi.intact.network.ws.controller.model.legend.BooleanLegend;
 import uk.ac.ebi.intact.network.ws.controller.utils.mapper.Mapper;
 
 import java.util.Collection;
