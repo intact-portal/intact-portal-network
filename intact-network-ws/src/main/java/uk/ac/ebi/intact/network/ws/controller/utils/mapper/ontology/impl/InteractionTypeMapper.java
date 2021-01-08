@@ -21,11 +21,8 @@ public class InteractionTypeMapper extends AbstractOntologyMapper<InteractionTyp
     }
 
     @Override
-    protected InteractionType matchArchetype(String MIId) {
-        for (InteractionType type: InteractionType.values()) {
-            if (type.id.equals(MIId)) return type;
-        }
-        return null;
+    protected InteractionType matchArchetype(String id) {
+        return InteractionType.getInteractionType(id);
     }
 
     @Override

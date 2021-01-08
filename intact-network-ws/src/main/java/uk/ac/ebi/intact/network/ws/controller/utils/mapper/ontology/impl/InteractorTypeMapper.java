@@ -21,10 +21,7 @@ public class InteractorTypeMapper extends AbstractOntologyMapper<InteractorType,
 
     @Override
     protected InteractorType matchArchetype(String id) {
-        for (InteractorType type: InteractorType.values()) {
-            if (type.id.equals(id)) return type;
-        }
-        return null;
+        return InteractorType.getInteractorType(id);
     }
 
     @Override

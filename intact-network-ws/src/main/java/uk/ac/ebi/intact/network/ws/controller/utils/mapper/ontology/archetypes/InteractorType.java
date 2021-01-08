@@ -3,6 +3,10 @@ package uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.archetypes;
 
 import uk.ac.ebi.intact.network.ws.controller.model.shapes.NodeShape;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 public enum InteractorType implements Archetype<NodeShape> {
     BIO_ACTIVE_ENTITY("bioactive entity", "MI:1100", NodeShape.TRIANGLE),
     PROTEIN("protein", "MI:0326", NodeShape.ELLIPSE),
@@ -20,12 +24,16 @@ public enum InteractorType implements Archetype<NodeShape> {
     public final String id;
     public final NodeShape shape;
 
+    final static Map<String, InteractorType> interactorTypes = Arrays.stream(InteractorType.values()).filter(type -> !type.id.isEmpty()).collect(Collectors.toMap(type -> type.id, type -> type));
     InteractorType(String name, String id, NodeShape shape) {
         this.name = name;
         this.id = id;
         this.shape = shape;
     }
 
+    public static InteractorType getInteractorType(String id) {
+        return interactorTypes.get(id);
+    }
 
     @Override
     public String getId() {

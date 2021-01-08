@@ -1,6 +1,9 @@
 package uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.archetypes;
 
 import java.awt.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public enum InteractionType implements Archetype<Color> {
     COLOCALIZATION("colocalization", "MI:0403", new Color(216, 216, 216), false),
@@ -16,11 +19,17 @@ public enum InteractionType implements Archetype<Color> {
     public final Color defaultColor;
     public final boolean queryChildren;
 
+    final static Map<String, InteractionType> interactionTypes = Arrays.stream(InteractionType.values()).filter(type -> !type.id.isEmpty()).collect(Collectors.toMap(type -> type.id, type -> type));
+
     InteractionType(String name, String id, Color defaultColor, boolean queryChildren) {
         this.name = name;
         this.id = id;
         this.defaultColor = defaultColor;
         this.queryChildren = queryChildren;
+    }
+
+    public static InteractionType getInteractionType(String id) {
+        return interactionTypes.get(id);
     }
 
     @Override
@@ -42,6 +51,5 @@ public enum InteractionType implements Archetype<Color> {
     public static String getRootId() {
         return "MI:0190";
     }
-
 
 }
