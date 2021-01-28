@@ -1,7 +1,7 @@
 package uk.ac.ebi.intact.network.ws.controller.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.ac.ebi.intact.network.ws.controller.model.legend.NetworkLegend;
+import uk.ac.ebi.intact.style.model.legend.NetworkLegend;
 
 import java.util.ArrayList;
 import java.util.List;

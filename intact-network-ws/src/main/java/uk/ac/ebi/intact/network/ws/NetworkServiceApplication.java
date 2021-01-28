@@ -12,10 +12,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.solr.core.SolrOperations;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.repository.config.EnableSolrRepositories;
-import uk.ac.ebi.intact.network.ws.controller.model.serializer.ArchetypeSerializer;
-import uk.ac.ebi.intact.network.ws.controller.model.serializer.ColorDeserializer;
-import uk.ac.ebi.intact.network.ws.controller.model.serializer.ColorSerializer;
-import uk.ac.ebi.intact.network.ws.controller.utils.mapper.ontology.archetypes.Archetype;
+import uk.ac.ebi.intact.style.mapper.ontology.archetypes.Archetype;
+import uk.ac.ebi.intact.style.model.serializer.ArchetypeSerializer;
+import uk.ac.ebi.intact.style.model.serializer.ColorDeserializer;
+import uk.ac.ebi.intact.style.model.serializer.ColorSerializer;
 
 import java.awt.*;
 

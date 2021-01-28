@@ -16,10 +16,8 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class NetworkControllerTest {
 
-
     @Autowired
     private NetworkController controller;
-
 
     @Test
     public void getGraphJson() {
