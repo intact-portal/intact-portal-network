@@ -42,3 +42,4 @@ spec:
       imagePullSecrets:
         # Provided by GitLab, this allows K8s to connect to dockerhub.ebi.ac.uk
         - name: gitlab-registry
+      dnsPolicy: Default
