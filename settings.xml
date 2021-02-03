@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <!-- =========================================================== -->
+    <!--            EBI PUB with thin oracle driver (local machines) -->
+    <!-- =========================================================== -->
+    <profiles>
+        <profile>
+            <id>ip-solr-indexing-hx</id>
+            <properties>
+                <graphdb.source>
+                    file:/nfs/misc/misc01/vol22/sp-misc1/intact/intact-portal/intact-solr-indexing/data/graph.db
+                </graphdb.source>
+                <solr.server>http://ves-hx-47.ebi.ac.uk:8983/solr</solr.server>
+                <bj.enabled>true</bj.enabled>
+                <neo4j.uri>bolt://intact-neo4j-001.ebi.ac.uk:7687</neo4j.uri>
+                <neo4j.user>neo4j</neo4j.user>
+                <neo4j.password>neo4j123</neo4j.password>
+                <neo4j.aop.enabled>true</neo4j.aop.enabled>
+            </properties>
+        </profile>
+    </profiles>
+</settings>
