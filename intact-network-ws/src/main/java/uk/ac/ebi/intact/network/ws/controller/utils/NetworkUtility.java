@@ -41,7 +41,7 @@ public class NetworkUtility {
 
         for (Integer parentSpecie : speciesDescendantsMap.keySet()) {
 
-            String jsonQuery = "https://www.ebi.ac.uk/ols/api/ontologies/ncbitaxon/terms/" +
+            String jsonQuery = "https://www-ebi-ac-uk/ols/api/ontologies/ncbitaxon/terms/" +
                     "http%253A%252F%252Fpurl.obolibrary.org%252Fobo%252FNCBITaxon_" + parentSpecie + "/descendants?size=1000";
 
             String jsonText = "";

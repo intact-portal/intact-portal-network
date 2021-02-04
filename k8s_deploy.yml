@@ -21,7 +21,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: www.ebi.ac.uk
+  name: www-ebi-ac-uk
 spec:
   type: ExternalName
   externalName: www.ebi.ac.uk
