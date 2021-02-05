@@ -9,9 +9,7 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -206,8 +204,9 @@ public class NetworkUtility {
     public static String getJsonForUrl(String jsonQuery) {
         String jsonText = "";
         try {
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("hx-wwwcache.ebi.ac.uk", 3128));
             URL url = new URL(jsonQuery);
-            URLConnection olsConnection = url.openConnection();
+            URLConnection olsConnection = url.openConnection(proxy);
             BufferedReader in = new BufferedReader(new InputStreamReader(olsConnection.getInputStream()));
             String inputLine;
             StringBuilder builder = new StringBuilder();
