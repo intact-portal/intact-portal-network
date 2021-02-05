@@ -29,7 +29,7 @@ public class NetworkUtility {
     private static final Log logger = LogFactory.getLog(NetworkUtility.class);
 
     public static void initializeSpeciesDescendantsMapping() {
-        logger.info("Executing  initializeSpeciesDescendantsMapping");
+
         speciesDescendantsMap.put(9606, null);// Homo sapiens
         speciesDescendantsMap.put(4932, null);// Mus musculus
         speciesDescendantsMap.put(10090, null);// Saccharomyces cerevisiae
@@ -41,7 +41,7 @@ public class NetworkUtility {
 
         for (Integer parentSpecie : speciesDescendantsMap.keySet()) {
 
-            String jsonQuery = "https://www-ebi-ac-uk/ols/api/ontologies/ncbitaxon/terms/" +
+            String jsonQuery = "https://www.ebi.ac.uk/ols/api/ontologies/ncbitaxon/terms/" +
                     "http%253A%252F%252Fpurl.obolibrary.org%252Fobo%252FNCBITaxon_" + parentSpecie + "/descendants?size=1000";
 
             String jsonText = "";
@@ -74,13 +74,10 @@ public class NetworkUtility {
                 }
             } catch (MalformedURLException e) {
                 logger.error(e.getMessage());
-                e.printStackTrace();
             } catch (IOException e) {
                 logger.error(e.getMessage());
-                e.printStackTrace();
             } catch (Exception e) {
                 logger.error(e.getMessage());
-                e.printStackTrace();
             }
             if (specieChildren.isEmpty()) {
                 specieChildren = null;
@@ -90,8 +87,6 @@ public class NetworkUtility {
     }
 
     public static void initializeInteractorTypeDescendantsMapping() {
-        logger.info("Executing  initializeInteractorTypeDescendantsMapping");
-
         interactorTypeDescendantsMap.put("MI:1100", null);// Bioactive entity
         interactorTypeDescendantsMap.put("MI:0320", null);// RNA
         interactorTypeDescendantsMap.put("MI:0319", null);// DNA
@@ -102,7 +97,7 @@ public class NetworkUtility {
 
         for (String parentInteractorType : interactorTypeDescendantsMap.keySet()) {
 
-            String jsonQuery = "https://www-ebi-ac-uk/ols/api/ontologies/mi/terms/" +
+            String jsonQuery = "https://www.ebi.ac.uk/ols/api/ontologies/mi/terms/" +
                     "http%253A%252F%252Fpurl.obolibrary.org%252Fobo%252F" + parentInteractorType.replaceAll(":", "_") + "/descendants?size=1000";
 
             String jsonText = "";
@@ -134,13 +129,10 @@ public class NetworkUtility {
                 }
             } catch (MalformedURLException e) {
                 logger.error(e.getMessage());
-                e.printStackTrace();
             } catch (IOException e) {
                 logger.error(e.getMessage());
-                e.printStackTrace();
             } catch (Exception e) {
                 logger.error(e.getMessage());
-                e.printStackTrace();
             }
             if (typeChildren.isEmpty()) {
                 typeChildren = null;
@@ -150,7 +142,6 @@ public class NetworkUtility {
     }
 
     public static void initializeInteractionTypeDescendantsMapping() {
-        logger.info("Executing  initializeInteractionTypeDescendantsMapping");
 
         interactionTypeDescendantsMap.put("MI:0407", null);// direct interaction
         interactionTypeDescendantsMap.put("MI:0217", null);// phosphorylation reaction
@@ -158,7 +149,7 @@ public class NetworkUtility {
 
         for (String parentInteractionType : interactionTypeDescendantsMap.keySet()) {
 
-            String jsonQuery = "https://www-ebi-ac-uk/ols/api/ontologies/mi/terms/" +
+            String jsonQuery = "https://www.ebi.ac.uk/ols/api/ontologies/mi/terms/" +
                     "http%253A%252F%252Fpurl.obolibrary.org%252Fobo%252F" + parentInteractionType.replaceAll(":", "_") + "/descendants?size=1000";
 
             String jsonText = "";
@@ -190,13 +181,10 @@ public class NetworkUtility {
                 }
             } catch (MalformedURLException e) {
                 logger.error(e.getMessage());
-                e.printStackTrace();
             } catch (IOException e) {
                 logger.error(e.getMessage());
-                e.printStackTrace();
             } catch (Exception e) {
                 logger.error(e.getMessage());
-                e.printStackTrace();
             }
             if (typeChildren.isEmpty()) {
                 typeChildren = null;
@@ -216,8 +204,6 @@ public class NetworkUtility {
      * @return
      */
     public static String getJsonForUrl(String jsonQuery) {
-        logger.info("Executing  getJsonForUrl");
-
         String jsonText = "";
         try {
             URL url = new URL(jsonQuery);
@@ -234,10 +220,8 @@ public class NetworkUtility {
             jsonText = builder.toString();
         } catch (MalformedURLException e) {
             logger.error(e.getMessage());
-            e.printStackTrace();
         } catch (IOException e) {
             logger.error(e.getMessage());
-            e.printStackTrace();
         }
 
         return jsonText;

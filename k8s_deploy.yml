@@ -18,14 +18,6 @@ spec:
     # Tell K8s this wants to expose an external port
   type: NodePort
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: www-ebi-ac-uk
-spec:
-  type: ExternalName
-  externalName: www.ebi.ac.uk
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
