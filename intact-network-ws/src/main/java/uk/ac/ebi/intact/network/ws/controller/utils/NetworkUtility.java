@@ -228,6 +228,7 @@ public class NetworkUtility {
 
     public static void test(){
         try {
+            System.setProperty("java.net.useSystemProxies", "true");
             List<Proxy> proxy = ProxySelector.getDefault().select(
                     new URI("http://www.yahoo.com/"));
             if(proxy!=null) {
