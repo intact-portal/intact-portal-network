@@ -226,6 +226,22 @@ public class NetworkUtility {
         return jsonText;
     }
 
+    public static void test(){
+        try {
+            List<Proxy> proxy = ProxySelector.getDefault().select(
+                    new URI("http://www.yahoo.com/"));
+            if(proxy!=null) {
+                Proxy proxy1=proxy.get(0);
+                System.out.println("proxy hostname : " + proxy1.type());
+                InetSocketAddress addr = (InetSocketAddress) proxy1.address();
+                System.out.println("proxy hostname : " + addr.getHostName());
+                System.out.println("proxy port : " + addr.getPort());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     public static String getColorForTaxId(Integer taxId) {
         Integer parentSpecie = NetworkUtility.descendantsParentMap.get(taxId);
         Integer specieTaxId = ((parentSpecie != null) ? parentSpecie : (taxId));
