@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -228,13 +229,13 @@ public class NetworkUtility {
 
     public static void test(){
         try {
-            System.setProperty("java.net.useSystemProxies", "true");
-            List<Proxy> proxy = ProxySelector.getDefault().select(
+           // System.setProperty("java.net.useSystemProxies", "true");
+            List<Proxy> proxyl = ProxySelector.getDefault().select(
                     new URI("http://www.yahoo.com/"));
-            if(proxy!=null) {
-                Proxy proxy1=proxy.get(0);
-                System.out.println("proxy hostname : " + proxy1.type());
-                InetSocketAddress addr = (InetSocketAddress) proxy1.address();
+            for (Iterator<Proxy> iter = proxyl.iterator(); iter.hasNext();) {
+                Proxy proxy = iter.next();
+                System.out.println("proxy hostname : " + proxy.type());
+                InetSocketAddress addr = (InetSocketAddress) proxy.address();
                 System.out.println("proxy hostname : " + addr.getHostName());
                 System.out.println("proxy port : " + addr.getPort());
             }
