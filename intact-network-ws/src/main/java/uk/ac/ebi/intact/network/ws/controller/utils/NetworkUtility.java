@@ -4,7 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,12 +16,12 @@ import java.io.InputStreamReader;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Created by anjali on 13/06/19.
  */
+@Component
 public class NetworkUtility {
     public static final HashMap<Integer, List<Integer>> speciesDescendantsMap = new HashMap<>();
     public static final HashMap<Integer, Integer> descendantsParentMap = new HashMap<>();
@@ -26,6 +30,26 @@ public class NetworkUtility {
     public static final HashMap<String, List<String>> interactionTypeDescendantsMap = new HashMap<>();
     public static final HashMap<String, String> interactionTypeParentMap = new HashMap<>();
     private static final Log logger = LogFactory.getLog(NetworkUtility.class);
+    private static final String HTTPS_PROXY_HOST="HTTPS_PROXY_HOST";
+    private static final String HTTPS_PROXY_PORT="HTTPS_PROXY_PORT";
+    private static Proxy proxy=Proxy.NO_PROXY;
+
+    @Autowired
+    private Environment env;
+
+    @PostConstruct
+    private void init() {
+        NetworkUtility.initializeProxiesIfAny(env.getProperty(HTTPS_PROXY_HOST),env.getProperty(HTTPS_PROXY_PORT));// this is for kubernetes
+        NetworkUtility.initializeSpeciesDescendantsMapping();
+        NetworkUtility.initializeInteractorTypeDescendantsMapping();
+        NetworkUtility.initializeInteractionTypeDescendantsMapping();
+    }
+
+    public static void initializeProxiesIfAny(String proxyHost,String proxyPort){
+        if(proxyHost!=null&&proxyPort!=null) {
+            proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, new Integer(proxyPort)));
+        }
+    }
 
     public static void initializeSpeciesDescendantsMapping() {
 
@@ -205,7 +229,6 @@ public class NetworkUtility {
     public static String getJsonForUrl(String jsonQuery) {
         String jsonText = "";
         try {
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("hx-wwwcache.ebi.ac.uk", 3128));
             URL url = new URL(jsonQuery);
             URLConnection olsConnection = url.openConnection(proxy);
             BufferedReader in = new BufferedReader(new InputStreamReader(olsConnection.getInputStream()));
@@ -225,23 +248,6 @@ public class NetworkUtility {
         }
 
         return jsonText;
-    }
-
-    public static void test(){
-        try {
-           // System.setProperty("java.net.useSystemProxies", "true");
-            List<Proxy> proxyl = ProxySelector.getDefault().select(
-                    new URI("http://www.yahoo.com/"));
-            for (Iterator<Proxy> iter = proxyl.iterator(); iter.hasNext();) {
-                Proxy proxy = iter.next();
-                System.out.println("proxy hostname : " + proxy.type());
-                InetSocketAddress addr = (InetSocketAddress) proxy.address();
-                System.out.println("proxy hostname : " + addr.getHostName());
-                System.out.println("proxy port : " + addr.getPort());
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
     }
 
     public static String getColorForTaxId(Integer taxId) {

@@ -44,10 +44,6 @@ public class NetworkServiceApplication extends SpringBootServletInitializer {
     }
 
     public static void main(String[] args) {
-        initializeSpeciesDescendantsMapping();
-        initializeInteractorTypeDescendantsMapping();
-        initializeInteractionTypeDescendantsMapping();
-        test();
         SpringApplication.run(NetworkServiceApplication.class, args);
     }
 }
