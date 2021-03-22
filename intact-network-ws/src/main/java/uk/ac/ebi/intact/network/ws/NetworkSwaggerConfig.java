@@ -2,7 +2,6 @@ package uk.ac.ebi.intact.network.ws;
 
 import com.fasterxml.classmate.TypeResolver;
 import com.google.common.base.Predicates;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -41,7 +40,7 @@ public class NetworkSwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfo(
-                "IntAct Interaction Search REST API",
+                "IntAct Network Viewer REST API",
                 "This API allow retrieving interaction data for the IntAct Network Component.",
                 "API 1.0 BETA",
                 "https://www.ebi.ac.uk/about/terms-of-use",
