@@ -21,7 +21,7 @@ public class NetworkControllerTest {
 
     @Test
     public void getGraphJson() {
-        ResponseEntity<NetworkJson> stat3 = controller.getGraphJson("lrrk2", false, new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>(), false, 0, 1, false, false, 0, 100);
+        ResponseEntity<NetworkJson> stat3 = controller.getGraphJson("lrrk2", false, new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>(), false, false,0, 1, false, false, 0, 100);
         assertTrue(stat3.hasBody());
     }
 }

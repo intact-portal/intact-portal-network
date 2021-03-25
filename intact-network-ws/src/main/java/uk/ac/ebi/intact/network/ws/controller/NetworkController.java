@@ -280,4 +280,52 @@ public class NetworkController {
             existingNetworkNode.setMutation(true);
         }
     }
+
+    private String createNodeLabel(String preferredName, String preferredId, String interactorAc) {
+        if (preferredName != null) {
+            return preferredName + " (" + preferredId + ")";
+        } else {
+            return interactorAc;
+        }
+    }
+
+    private void registerNode(Map<String, NetworkNode> acToNode, List<Object> edgesAndNodes,
+                              String ac, Integer taxId, String species, boolean isCompound,
+                              String molecule, String uniqueId, String id,
+                              String type, String typeMI, boolean isMutated,
+                              Set<String> taxIdFacets, Set<String> interactorTypeIdFacets) {
+        if (!acToNode.containsKey(ac)) {
+            NetworkNode networkNode = new NetworkNode();
+            NetworkNodeGroup networkNodeGroup = new NetworkNodeGroup();
+            String parentTaxId = taxId + "";
+            networkNode.setId(ac);
+            networkNode.setSpeciesName(species);
+            networkNode.setTaxId(taxId);
+            if (isCompound) {
+                edgesAndNodes.add(createMetaNode(parentTaxId, species));
+                networkNode.setParent(parentTaxId);
+            }
+            networkNode.setInteractorId(createNodeLabel(molecule, uniqueId, ac));
+            networkNode.setPreferredIdWithDB(id);
+            networkNode.setInteractorType(type);
+            networkNode.setPreferredId(uniqueId);
+            networkNode.setInteractorName(molecule);
+
+            networkNode.setColor(styleService.getInteractorColor(taxId.toString()));
+            networkNode.setShape(styleService.getInteractorShape(typeMI));
+            networkNode.setBorderColor(styleService.getInteractorBorderColor(isMutated));
+            taxIdFacets.add(taxId.toString()); // TODO: Remove on Solr faceting
+            interactorTypeIdFacets.add(typeMI); // TODO: Remove on Solr faceting
+
+            networkNode.setClusterId(taxId);
+            networkNode.setMutation(isMutated);
+            networkNodeGroup.setInteractor(networkNode);
+
+            acToNode.put(ac, networkNode);
+            edgesAndNodes.add(networkNodeGroup);
+        } else if (isMutated) {
+            NetworkNode existingNetworkNode = acToNode.get(ac);
+            existingNetworkNode.setMutation(true);
+        }
+    }
 }
