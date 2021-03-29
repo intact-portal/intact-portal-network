@@ -59,14 +59,15 @@ public class NetworkController {
             @RequestParam(value = "query") String query,
             @RequestParam(value = "batchSearch", required = false) boolean batchSearch,
             @RequestParam(value = "interactorSpeciesFilter", required = false) Set<String> interactorSpeciesFilter,
-            @RequestParam(value = "interactorTypeFilter", required = false) Set<String> interactorTypeFilter,
-            @RequestParam(value = "interactionDetectionMethodFilter", required = false) Set<String> interactionDetectionMethodFilter,
-            @RequestParam(value = "interactionTypeFilter", required = false) Set<String> interactionTypeFilter,
-            @RequestParam(value = "interactionHostOrganismFilter", required = false) Set<String> interactionHostOrganismFilter,
-            @RequestParam(value = "isNegativeFilter", required = false) boolean isNegativeFilter,
-            @RequestParam(value = "minMiScore", defaultValue = "0", required = false) double minMiScore,
-            @RequestParam(value = "maxMiScore", defaultValue = "1", required = false) double maxMiScore,
-            @RequestParam(value = "interSpecies", required = false) boolean interSpecies,
+            @RequestParam(value = "interactorTypesFilter", required = false) Set<String> interactorTypesFilter,
+            @RequestParam(value = "interactionDetectionMethodsFilter", required = false) Set<String> interactionDetectionMethodsFilter,
+            @RequestParam(value = "interactionTypesFilter", required = false) Set<String> interactionTypesFilter,
+            @RequestParam(value = "interactionHostOrganismsFilter", required = false) Set<String> interactionHostOrganismsFilter,
+            @RequestParam(value = "negativeFilter", required = false) boolean negativeFilter,
+            @RequestParam(value = "mutationFilter", required = false) boolean mutationFilter,
+            @RequestParam(value = "minMIScore", defaultValue = "0", required = false) double minMIScore,
+            @RequestParam(value = "maxMIScore", defaultValue = "1", required = false) double maxMIScore,
+            @RequestParam(value = "intraSpeciesFilter", required = false) boolean intraSpeciesFilter,
             @RequestParam(value = "isCompound", required = false) boolean isCompound,
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "pageSize", defaultValue = Integer.MAX_VALUE + "", required = false) int pageSize) {
@@ -77,14 +78,15 @@ public class NetworkController {
                 extractSearchTerms(query),
                 batchSearch,
                 interactorSpeciesFilter,
-                interactorTypeFilter,
-                interactionDetectionMethodFilter,
-                interactionTypeFilter,
-                interactionHostOrganismFilter,
-                isNegativeFilter,
-                minMiScore,
-                maxMiScore,
-                interSpecies
+                interactorTypesFilter,
+                interactionDetectionMethodsFilter,
+                interactionTypesFilter,
+                interactionHostOrganismsFilter,
+                negativeFilter,
+                mutationFilter,
+                minMIScore,
+                maxMIScore,
+                intraSpeciesFilter
         );
 
         if (interactionsCount > 1300) {
@@ -94,14 +96,14 @@ public class NetworkController {
                     extractSearchTerms(query),
                     batchSearch,
                     interactorSpeciesFilter,
-                    interactorTypeFilter,
-                    interactionDetectionMethodFilter,
-                    interactionTypeFilter,
-                    interactionHostOrganismFilter,
-                    isNegativeFilter,
-                    minMiScore,
-                    maxMiScore,
-                    interSpecies,
+                    interactorTypesFilter,
+                    interactionDetectionMethodsFilter,
+                    interactionTypesFilter,
+                    interactionHostOrganismsFilter,
+                    negativeFilter,
+                    mutationFilter, minMIScore,
+                    maxMIScore,
+                    intraSpeciesFilter,
                     page,
                     pageSize);
 
@@ -231,54 +233,6 @@ public class NetworkController {
         }
 
         return searchTerms.toString();
-    }
-
-    private String createNodeLabel(String preferredName, String preferredId, String interactorAc) {
-        if (preferredName != null) {
-            return preferredName + " (" + preferredId + ")";
-        } else {
-            return interactorAc;
-        }
-    }
-
-    private void registerNode(Map<String, NetworkNode> acToNode, List<Object> edgesAndNodes,
-                              String ac, Integer taxId, String species, boolean isCompound,
-                              String molecule, String uniqueId, String id,
-                              String type, String typeMI, boolean isMutated,
-                              Set<String> taxIdFacets, Set<String> interactorTypeIdFacets) {
-        if (!acToNode.containsKey(ac)) {
-            NetworkNode networkNode = new NetworkNode();
-            NetworkNodeGroup networkNodeGroup = new NetworkNodeGroup();
-            String parentTaxId = taxId + "";
-            networkNode.setId(ac);
-            networkNode.setSpeciesName(species);
-            networkNode.setTaxId(taxId);
-            if (isCompound) {
-                edgesAndNodes.add(createMetaNode(parentTaxId, species));
-                networkNode.setParent(parentTaxId);
-            }
-            networkNode.setInteractorId(createNodeLabel(molecule, uniqueId, ac));
-            networkNode.setPreferredIdWithDB(id);
-            networkNode.setInteractorType(type);
-            networkNode.setPreferredId(uniqueId);
-            networkNode.setInteractorName(molecule);
-
-            networkNode.setColor(styleService.getInteractorColor(taxId.toString()));
-            networkNode.setShape(styleService.getInteractorShape(typeMI));
-            networkNode.setBorderColor(styleService.getInteractorBorderColor(isMutated));
-            taxIdFacets.add(taxId.toString()); // TODO: Remove on Solr faceting
-            interactorTypeIdFacets.add(typeMI); // TODO: Remove on Solr faceting
-
-            networkNode.setClusterId(taxId);
-            networkNode.setMutation(isMutated);
-            networkNodeGroup.setInteractor(networkNode);
-
-            acToNode.put(ac, networkNode);
-            edgesAndNodes.add(networkNodeGroup);
-        } else if (isMutated) {
-            NetworkNode existingNetworkNode = acToNode.get(ac);
-            existingNetworkNode.setMutation(true);
-        }
     }
 
     private String createNodeLabel(String preferredName, String preferredId, String interactorAc) {
