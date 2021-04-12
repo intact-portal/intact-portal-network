@@ -1,0 +1,62 @@
+image: docker:latest
+services:
+  - docker:dind
+variables:
+  CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:latest
+  DOCKER_TLS_CERTDIR: ""
+stages:
+  - build-jar
+  - build-docker-image
+  - kubernetes-deploy
+
+maven-build:
+  image: maven:3-jdk-8
+  stage: build-jar
+  script: "mvn package -B -s settings.xml -Pip-solr-indexing-hx"
+  after_script:
+    - "mkdir /builds/intact-ci/intact-portal-network/target/"
+    - "cp /builds/intact-ci/intact-portal-network/intact-network-ws/target/intact-network-ws-0.0.1-SNAPSHOT.jar /builds/intact-ci/intact-portal-network/target/"
+  artifacts:
+    paths:
+      - target/*.jar
+
+docker-build:
+  stage: build-docker-image
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+    - docker --version
+    - echo ${CONTAINER_IMAGE}
+  script:
+    - docker build -t ${CONTAINER_IMAGE} --no-cache .
+    - docker image ls
+    - docker push ${CONTAINER_IMAGE}
+    - docker rmi ${CONTAINER_IMAGE}
+    - docker logout "$CI_REGISTRY"
+
+kubernetes-staging-deploy:
+  stage: kubernetes-deploy
+  image: alpine
+  script:
+    - apk add --no-cache curl git
+    - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+    - chmod +x ./kubectl
+    - mv ./kubectl /usr/local/bin/kubectl
+    - git clone https://k8s-config-token:${K8S_CONFIG_TOKEN}@gitlab.ebi.ac.uk/anjali/k8s-config-test
+    - mkdir ~/.kube
+    - cp k8s-config-test/config ~/.kube/
+    - kubectl config get-contexts
+    - kubectl config use-context team-admin-hx-wp-webadmin-24
+    - 'printf "$(kubectl create secret docker-registry gitlab-registry --docker-server=$CI_REGISTRY --docker-username=$CI_DEPLOY_USER --docker-password=$CI_DEPLOY_PASSWORD --docker-email=$GITLAB_USER_EMAIL -o yaml --dry-run=client)" | kubectl apply -f -'
+    - kubectl get secrets gitlab-registry -o yaml
+    - kubectl apply -f k8s_deploy.yml
+    - kubectl rollout restart deployment/intact-portal-network-deployment
+    - kubectl get nodes
+  when: manual
+
+kubernetes-production-deploy:
+  stage: kubernetes-deploy
+  image: alpine
+  script:
+    - echo "Deploy to production server"
+  when: manual
+
