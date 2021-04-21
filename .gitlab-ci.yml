@@ -10,7 +10,7 @@ stages:
   - kubernetes-deploy
 
 maven-build:
-  image: maven:3-jdk-8
+  image: maven:3.6-jdk-8
   stage: build-jar
   script: "mvn package -B -s settings.xml -Pip-solr-indexing-hx"
   after_script:
@@ -53,10 +53,22 @@ kubernetes-staging-deploy:
     - kubectl get nodes
   when: manual
 
-kubernetes-production-deploy:
+hh-kubernetes-production-deploy:
   stage: kubernetes-deploy
   image: alpine
   script:
-    - echo "Deploy to production server"
+    - apk add --no-cache curl git
+    - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+    - chmod +x ./kubectl
+    - mv ./kubectl /usr/local/bin/kubectl
+    - git clone https://k8s-config-token:${K8S_CONFIG_TOKEN_HH}@gitlab.ebi.ac.uk/anjali/k8s-config-hh
+    - mkdir ~/.kube
+    - cp k8s-config-hh/config ~/.kube/
+    - kubectl config use-context prod
+    - 'printf "$(kubectl create secret docker-registry gitlab-registry --docker-server=$CI_REGISTRY --docker-username=$CI_DEPLOY_USER --docker-password=$CI_DEPLOY_PASSWORD --docker-email=$GITLAB_USER_EMAIL -o yaml --dry-run=client)" | kubectl apply -f -'
+    - kubectl get secrets gitlab-registry -o yaml
+    - kubectl apply -f k8s_deploy.yml
+    - kubectl rollout restart deployment/intact-portal-network-deployment
+    - kubectl get nodes
   when: manual
 
