@@ -3,12 +3,14 @@ package uk.ac.ebi.intact.network.ws.controller;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.solr.core.query.result.FacetFieldEntry;
 import org.springframework.data.solr.core.query.result.FacetPage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.intact.network.ws.controller.model.*;
 import uk.ac.ebi.intact.search.interactions.model.SearchInteraction;
 import uk.ac.ebi.intact.search.interactions.model.SearchInteractionFields;
@@ -17,10 +19,6 @@ import uk.ac.ebi.intact.style.model.shapes.NodeShape;
 import uk.ac.ebi.intact.style.service.StyleService;
 
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,14 +32,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 public class NetworkController {
 
-    //TODO temporary
-    public static final String UPLOADED_BATCH_FILE_PREFIX = "file_";
     private static final Log log = LogFactory.getLog(NetworkController.class);
-
-
-    @Value("${server.upload.batch.file.path}")
-    private String uploadBatchFilePath;
-
 
     private final InteractionSearchService interactionSearchService;
     private final StyleService styleService;
@@ -65,6 +56,7 @@ public class NetworkController {
             @RequestParam(value = "interactionHostOrganismsFilter", required = false) Set<String> interactionHostOrganismsFilter,
             @RequestParam(value = "negativeFilter", required = false) boolean negativeFilter,
             @RequestParam(value = "mutationFilter", required = false) boolean mutationFilter,
+            @RequestParam(value = "expansionFilter", required = false) boolean expansionFilter,
             @RequestParam(value = "minMIScore", defaultValue = "0", required = false) double minMIScore,
             @RequestParam(value = "maxMIScore", defaultValue = "1", required = false) double maxMIScore,
             @RequestParam(value = "intraSpeciesFilter", required = false) boolean intraSpeciesFilter,
@@ -75,7 +67,7 @@ public class NetworkController {
         HttpStatus httpStatus = HttpStatus.OK;
         NetworkJson networkJson = null;
         long interactionsCount = interactionSearchService.countInteractionsForGraphJson(
-                extractSearchTerms(query),
+                query,
                 batchSearch,
                 interactorSpeciesFilter,
                 interactorTypesFilter,
@@ -84,6 +76,7 @@ public class NetworkController {
                 interactionHostOrganismsFilter,
                 negativeFilter,
                 mutationFilter,
+                expansionFilter,
                 minMIScore,
                 maxMIScore,
                 intraSpeciesFilter
@@ -93,7 +86,7 @@ public class NetworkController {
             httpStatus = HttpStatus.FORBIDDEN;
         } else {
             FacetPage<SearchInteraction> interactions = interactionSearchService.findInteractionForGraphJsonWithFacet(
-                    extractSearchTerms(query),
+                    query,
                     batchSearch,
                     interactorSpeciesFilter,
                     interactorTypesFilter,
@@ -101,7 +94,9 @@ public class NetworkController {
                     interactionTypesFilter,
                     interactionHostOrganismsFilter,
                     negativeFilter,
-                    mutationFilter, minMIScore,
+                    mutationFilter,
+                    expansionFilter,
+                    minMIScore,
                     maxMIScore,
                     intraSpeciesFilter,
                     page,
@@ -155,7 +150,7 @@ public class NetworkController {
                 if (spokeExpanded) edgeExpanded = true;
                 networkLink.setShape(styleService.getInteractionShape(spokeExpanded));
 
-                boolean affectedByMutation = searchInteraction.isDisruptedByMutation();
+                boolean affectedByMutation = searchInteraction.isAffectedByMutation();
                 if (affectedByMutation) edgeAffectedByMutation = true;
                 networkLink.setAffectedByMutation(affectedByMutation);
                 networkLink.setMiScore(searchInteraction.getIntactMiscore());
@@ -202,37 +197,6 @@ public class NetworkController {
         graphCompoundNode.setShape(NodeShape.ELLIPSE);
 
         return graphCompoundNodeGroup;
-    }
-
-    //TODO temporary
-    private String extractSearchTerms(String query) {
-
-        StringBuilder searchTerms = new StringBuilder();
-
-        if (query.startsWith(UPLOADED_BATCH_FILE_PREFIX)) {
-            File uploadedBatchFile = new File(uploadBatchFilePath + File.separator + query);
-            if (uploadedBatchFile.exists()) {
-                try {
-                    BufferedReader bufferedReader = new BufferedReader(new FileReader(uploadedBatchFile));
-                    String line;
-                    int count = 0;
-                    while ((line = bufferedReader.readLine()) != null) {
-                        if (count > 0) {
-                            searchTerms.append(",").append(line);
-                        } else {
-                            searchTerms = new StringBuilder(line);
-                        }
-                        count++;
-                    }
-                } catch (IOException exception) {
-                    exception.printStackTrace();
-                }
-            }
-        } else {
-            searchTerms = new StringBuilder(query);
-        }
-
-        return searchTerms.toString();
     }
 
     private String createNodeLabel(String preferredName, String preferredId, String interactorAc) {

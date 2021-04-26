@@ -11,7 +11,7 @@ import java.awt.*;
 public class NetworkLink {
 
     @JsonProperty("id")
-    private int id;
+    private long id;
 
     @JsonProperty("source")
     private String source;
@@ -43,11 +43,11 @@ public class NetworkLink {
     @JsonProperty("shape")
     private EdgeShape shape;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
