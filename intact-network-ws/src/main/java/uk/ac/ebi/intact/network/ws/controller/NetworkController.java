@@ -34,6 +34,8 @@ public class NetworkController {
 
     private static final Log log = LogFactory.getLog(NetworkController.class);
 
+    public static final int NETWORK_LIMIT = 1500;
+
     private final InteractionSearchService interactionSearchService;
     private final StyleService styleService;
 
@@ -82,7 +84,7 @@ public class NetworkController {
                 intraSpeciesFilter
         );
 
-        if (interactionsCount > 1300) {
+        if (interactionsCount > NETWORK_LIMIT) {
             httpStatus = HttpStatus.FORBIDDEN;
         } else {
             FacetPage<SearchInteraction> interactions = interactionSearchService.findInteractionForGraphJsonWithFacet(
