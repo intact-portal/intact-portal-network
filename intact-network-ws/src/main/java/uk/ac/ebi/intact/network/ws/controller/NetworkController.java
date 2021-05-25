@@ -3,7 +3,6 @@ package uk.ac.ebi.intact.network.ws.controller;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.solr.core.query.result.FacetFieldEntry;
 import org.springframework.data.solr.core.query.result.FacetPage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.intact.network.ws.controller.model.*;
 import uk.ac.ebi.intact.search.interactions.model.SearchInteraction;
-import uk.ac.ebi.intact.search.interactions.model.SearchInteractionFields;
 import uk.ac.ebi.intact.search.interactions.service.InteractionSearchService;
 import uk.ac.ebi.intact.style.model.shapes.NodeShape;
 import uk.ac.ebi.intact.style.service.StyleService;
@@ -21,7 +19,6 @@ import uk.ac.ebi.intact.style.service.StyleService;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -104,11 +101,11 @@ public class NetworkController {
                     page,
                     pageSize);
 
-            networkJson = toCytoscapeJsonFormat(interactions.getContent(), isCompound,
-                    interactions.getFacetResultPage(SearchInteractionFields.SPECIES_A_B_STR).get().map(FacetFieldEntry::getValue).collect(Collectors.toSet()), //TODO Replace by taxids of A and B
-                    interactions.getFacetResultPage(SearchInteractionFields.TYPE_MI_IDENTIFIER).get().map(FacetFieldEntry::getValue).collect(Collectors.toSet()),
-                    interactions.getFacetResultPage(SearchInteractionFields.TYPE_MI_A).get().map(FacetFieldEntry::getValue).collect(Collectors.toSet()) //TODO replace by a faceting of both A and B
-            );
+            networkJson = toCytoscapeJsonFormat(interactions.getContent(), isCompound, null, null, null);
+//                    interactions.getFacetResultPage(SearchInteractionFields.SPECIES_A_B_STR).get().map(FacetFieldEntry::getValue).collect(Collectors.toSet()), //TODO Replace by taxids of A and B
+//                    interactions.getFacetResultPage(SearchInteractionFields.TYPE_MI_IDENTIFIER).get().map(FacetFieldEntry::getValue).collect(Collectors.toSet()),
+//                    interactions.getFacetResultPage(SearchInteractionFields.TYPE_MI_A).get().map(FacetFieldEntry::getValue).collect(Collectors.toSet()) //TODO replace by a faceting of both A and B
+//            );
         }
         //initialising empty json if request is forbidden
         networkJson = (networkJson == null) ? new NetworkJson() : networkJson;
