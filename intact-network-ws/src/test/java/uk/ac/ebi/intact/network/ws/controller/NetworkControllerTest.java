@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.network.ws.controller;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ public class NetworkControllerTest {
     private NetworkController controller;
 
     @Test
+    @Ignore
     public void getGraphJson() {
         ResponseEntity<NetworkJson> lrrk2 = controller.getGraphJson(
                 "lrrk2",
