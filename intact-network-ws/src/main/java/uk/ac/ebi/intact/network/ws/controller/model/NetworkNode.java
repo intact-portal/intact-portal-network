@@ -1,6 +1,10 @@
 package uk.ac.ebi.intact.network.ws.controller.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.ac.ebi.intact.style.mapper.ontology.archetypes.Archetype;
+import uk.ac.ebi.intact.style.model.shapes.NodeShape;
+
+import java.awt.*;
 
 /**
  * Created by anjali on 17/05/19.
@@ -17,7 +21,10 @@ public class NetworkNode {
     private int taxId;
 
     @JsonProperty("color")
-    private String color;
+    private Color color;
+
+    @JsonProperty("border_color")
+    private Color borderColor;
 
     @JsonProperty("label")
     private String interactorId;
@@ -35,7 +42,7 @@ public class NetworkNode {
     private String parent;
 
     @JsonProperty("shape")
-    private String shape;
+    private NodeShape shape;
 
     @JsonProperty("clusterID")
     private int clusterId;
@@ -45,7 +52,6 @@ public class NetworkNode {
 
     @JsonProperty("preferred_id_db")
     private String preferredIdWithDB;
-
 
     public String getId() {
         return id;
@@ -71,12 +77,20 @@ public class NetworkNode {
         this.taxId = taxId;
     }
 
-    public String getColor() {
+    public Color getColor() {
         return color;
     }
 
-    public void setColor(String color) {
+    public void setColor(Color color) {
         this.color = color;
+    }
+
+    public Color getBorderColor() {
+        return borderColor;
+    }
+
+    public void setBorderColor(Color borderColor) {
+        this.borderColor = borderColor;
     }
 
     public String getInteractorId() {
@@ -119,11 +133,11 @@ public class NetworkNode {
         this.parent = parent;
     }
 
-    public String getShape() {
+    public NodeShape getShape() {
         return shape;
     }
 
-    public void setShape(String shape) {
+    public void setShape(NodeShape shape) {
         this.shape = shape;
     }
 
