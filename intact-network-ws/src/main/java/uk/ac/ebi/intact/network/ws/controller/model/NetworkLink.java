@@ -43,6 +43,9 @@ public class NetworkLink {
     @JsonProperty("shape")
     private EdgeShape shape;
 
+    @JsonProperty("negative")
+    private boolean negative;
+
     public long getId() {
         return id;
     }
@@ -129,5 +132,13 @@ public class NetworkLink {
 
     public void setShape(EdgeShape shape) {
         this.shape = shape;
+    }
+
+    public boolean isNegative() {
+        return negative;
+    }
+
+    public void setNegative(boolean negative) {
+        this.negative = negative;
     }
 }

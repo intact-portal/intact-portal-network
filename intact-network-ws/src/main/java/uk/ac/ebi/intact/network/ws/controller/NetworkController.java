@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.intact.network.ws.controller.model.*;
 import uk.ac.ebi.intact.search.interactions.model.SearchInteraction;
 import uk.ac.ebi.intact.search.interactions.service.InteractionSearchService;
+import uk.ac.ebi.intact.search.interactions.utils.NegativeFilterStatus;
 import uk.ac.ebi.intact.style.model.shapes.NodeShape;
 import uk.ac.ebi.intact.style.service.StyleService;
 
@@ -53,7 +54,7 @@ public class NetworkController {
             @RequestParam(value = "interactionDetectionMethodsFilter", required = false) Set<String> interactionDetectionMethodsFilter,
             @RequestParam(value = "interactionTypesFilter", required = false) Set<String> interactionTypesFilter,
             @RequestParam(value = "interactionHostOrganismsFilter", required = false) Set<String> interactionHostOrganismsFilter,
-            @RequestParam(value = "negativeFilter", required = false) boolean negativeFilter,
+            @RequestParam(value = "negativeFilter", required = false) NegativeFilterStatus negativeFilter,
             @RequestParam(value = "mutationFilter", required = false) boolean mutationFilter,
             @RequestParam(value = "expansionFilter", required = false) boolean expansionFilter,
             @RequestParam(value = "minMIScore", defaultValue = "0", required = false) double minMIScore,
@@ -73,7 +74,7 @@ public class NetworkController {
                 interactionDetectionMethodsFilter,
                 interactionTypesFilter,
                 interactionHostOrganismsFilter,
-                negativeFilter,
+                negativeFilter.booleanValue,
                 mutationFilter,
                 expansionFilter,
                 minMIScore,
@@ -92,7 +93,7 @@ public class NetworkController {
                     interactionDetectionMethodsFilter,
                     interactionTypesFilter,
                     interactionHostOrganismsFilter,
-                    negativeFilter,
+                    negativeFilter.booleanValue,
                     mutationFilter,
                     expansionFilter,
                     minMIScore,
@@ -118,6 +119,7 @@ public class NetworkController {
         Map<String, NetworkNode> acToNode = new HashMap<>();
         boolean nodeMutated = false;
         boolean edgeExpanded = false;
+        boolean edgeNegative = false;
         boolean edgeAffectedByMutation = false;
 
         // TODO: Remove when Facets uses Solr
@@ -145,6 +147,7 @@ public class NetworkController {
                 networkLink.setColor(styleService.getInteractionColor(searchInteraction.getTypeMIIdentifier()));
                 networkLink.setCollapsedColor(styleService.getSummaryInteractionColor(searchInteraction.getIntactMiscore()));
                 interactionTypeFacets.add(searchInteraction.getTypeMIIdentifier()); // TODO: Remove on Solr faceting
+
                 boolean spokeExpanded = searchInteraction.getExpansionMethod() != null;
                 if (spokeExpanded) edgeExpanded = true;
                 networkLink.setShape(styleService.getInteractionShape(spokeExpanded));
@@ -152,6 +155,11 @@ public class NetworkController {
                 boolean affectedByMutation = searchInteraction.isAffectedByMutation();
                 if (affectedByMutation) edgeAffectedByMutation = true;
                 networkLink.setAffectedByMutation(affectedByMutation);
+
+                boolean negative = searchInteraction.isNegative();
+                if (negative) edgeNegative = true;
+                networkLink.setNegative(negative);
+
                 networkLink.setMiScore(searchInteraction.getIntactMiscore());
                 networkEdgeGroup.setInteraction(networkLink);
 
@@ -183,7 +191,7 @@ public class NetworkController {
             }
         }
 
-        return new NetworkJson(edgesAndNodes, styleService.createLegend(taxIdFacets, interactorTypeFacets, nodeMutated, interactionTypeFacets, edgeExpanded, edgeAffectedByMutation));
+        return new NetworkJson(edgesAndNodes, styleService.createLegend(taxIdFacets, interactorTypeFacets, nodeMutated, interactionTypeFacets, edgeExpanded, edgeAffectedByMutation, edgeNegative));
     }
 
     public NetworkNodeGroup createMetaNode(String parentTaxId, String species) {

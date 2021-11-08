@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.intact.network.ws.controller.model.NetworkJson;
+import uk.ac.ebi.intact.search.interactions.utils.NegativeFilterStatus;
 
 import java.util.HashSet;
 
@@ -31,7 +32,7 @@ public class NetworkControllerTest {
                 new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
-                false,
+                NegativeFilterStatus.POSITIVE_ONLY,
                 false,
                 false,
                 0,
