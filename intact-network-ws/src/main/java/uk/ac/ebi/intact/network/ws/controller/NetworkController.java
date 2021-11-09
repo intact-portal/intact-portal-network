@@ -54,7 +54,7 @@ public class NetworkController {
             @RequestParam(value = "interactionDetectionMethodsFilter", required = false) Set<String> interactionDetectionMethodsFilter,
             @RequestParam(value = "interactionTypesFilter", required = false) Set<String> interactionTypesFilter,
             @RequestParam(value = "interactionHostOrganismsFilter", required = false) Set<String> interactionHostOrganismsFilter,
-            @RequestParam(value = "negativeFilter", required = false) NegativeFilterStatus negativeFilter,
+            @RequestParam(value = "negativeFilter", required = false, defaultValue = "POSITIVE_ONLY") NegativeFilterStatus negativeFilter,
             @RequestParam(value = "mutationFilter", required = false) boolean mutationFilter,
             @RequestParam(value = "expansionFilter", required = false) boolean expansionFilter,
             @RequestParam(value = "minMIScore", defaultValue = "0", required = false) double minMIScore,
