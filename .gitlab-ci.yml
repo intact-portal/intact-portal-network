@@ -15,7 +15,7 @@ maven-build:
   script: "mvn package -B -s settings.xml -Pip-solr-indexing-hx"
   after_script:
     - "mkdir /builds/intact-ci/intact-portal-network/target/"
-    - "cp /builds/intact-ci/intact-portal-network/intact-network-ws/target/intact-network-ws-0.0.1-SNAPSHOT.jar /builds/intact-ci/intact-portal-network/target/"
+    - "cp /builds/intact-ci/intact-portal-network/intact-network-ws/target/intact-network-ws-1.0.1-SNAPSHOT.jar /builds/intact-ci/intact-portal-network/target/"
   artifacts:
     paths:
       - target/*.jar
