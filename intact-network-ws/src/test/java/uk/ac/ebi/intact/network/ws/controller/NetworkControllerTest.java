@@ -27,6 +27,7 @@ public class NetworkControllerTest {
         ResponseEntity<NetworkJson> lrrk2 = controller.getGraphJson(
                 "lrrk2",
                 false,
+                false,
                 new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),

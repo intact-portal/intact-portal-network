@@ -49,6 +49,7 @@ public class NetworkController {
     public ResponseEntity<NetworkJson> getGraphJson(
             @RequestParam(value = "query") String query,
             @RequestParam(value = "batchSearch", required = false) boolean batchSearch,
+            @RequestParam(value = "advancedSearch", required = false) boolean advancedSearch,
             @RequestParam(value = "interactorSpeciesFilter", required = false) Set<String> interactorSpeciesFilter,
             @RequestParam(value = "interactorTypesFilter", required = false) Set<String> interactorTypesFilter,
             @RequestParam(value = "interactionDetectionMethodsFilter", required = false) Set<String> interactionDetectionMethodsFilter,
@@ -69,6 +70,7 @@ public class NetworkController {
         long interactionsCount = interactionSearchService.countInteractionsForGraphJson(
                 query,
                 batchSearch,
+                advancedSearch,
                 interactorSpeciesFilter,
                 interactorTypesFilter,
                 interactionDetectionMethodsFilter,
@@ -88,6 +90,7 @@ public class NetworkController {
             FacetPage<SearchInteraction> interactions = interactionSearchService.findInteractionForGraphJsonWithFacet(
                     query,
                     batchSearch,
+                    advancedSearch,
                     interactorSpeciesFilter,
                     interactorTypesFilter,
                     interactionDetectionMethodsFilter,
