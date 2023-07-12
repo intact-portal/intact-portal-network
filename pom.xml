@@ -5,7 +5,7 @@
 
     <groupId>uk.ac.ebi.intact.network</groupId>
     <artifactId>intact-network-module</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>IntAct Portal :: Network Visualization Module</name>
@@ -22,7 +22,7 @@
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <intact.search.interactions.version>1.0.7-SNAPSHOT</intact.search.interactions.version>
+        <intact.search.interactions.version>1.0.8-SNAPSHOT</intact.search.interactions.version>
         <intact.style.version>1.0.2-SNAPSHOT</intact.style.version>
 
         <style.full.index>true</style.full.index>
