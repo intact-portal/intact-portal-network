@@ -24,7 +24,18 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <intact.search.interactions.version>1.1.0-SNAPSHOT</intact.search.interactions.version>
         <intact.style.version>1.1.0-SNAPSHOT</intact.style.version>
+
+        <style.full.index>true</style.full.index>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>debug</id>
+            <properties>
+                <style.full.index>false</style.full.index>
+            </properties>
+        </profile>
+    </profiles>
 
     <modules>
         <module>intact-network-ws</module>
