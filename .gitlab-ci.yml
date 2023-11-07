@@ -10,7 +10,7 @@ stages:
   - kubernetes-deploy
 
 maven-build:
-  image: maven:3.6-jdk-8
+  image: maven:3.6-jdk-11
   stage: build-jar
   script: "mvn package -B -s settings.xml -Pip-solr-indexing-hx"
   after_script:
