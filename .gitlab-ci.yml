@@ -1,6 +1,6 @@
 image: docker:latest
 services:
-  - docker:dind
+  - docker:stable-dind
 variables:
   CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:latest
   DOCKER_TLS_CERTDIR: ""
