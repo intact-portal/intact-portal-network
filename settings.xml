@@ -11,7 +11,7 @@
             <id>ip-solr-indexing-hx</id>
             <properties>
                 <solr.server>http://solr-service:8983/solr</solr.server>
-                <style.full.index>true</style.full.index>
+                <style-full-index>true</style-full-index>
             </properties>
         </profile>
     </profiles>
