@@ -1,0 +1,47 @@
+# Specifies what version of K8s you want to use
+apiVersion: v1
+# A service is used to expose your Deployment to the external access
+kind: Service
+metadata:
+  name: intact-portal-network-service
+spec:
+  ports:
+    - port: 31236
+      protocol: TCP
+      # The port which will be externally exposed. Must be in the range [30000, 32767].
+      nodePort: 31236
+      # The port on your Deployment which it will expose
+      targetPort: 8084
+  selector:
+    # Selects the disease-portal-client Deployment to attach the Service to
+    app: intact-portal-network
+    # Tell K8s this wants to expose an external port
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: intact-portal-network-deployment
+spec:
+  selector:
+    matchLabels:
+      app: intact-portal-network
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: intact-portal-network
+    spec:
+      containers:
+        - name: intact-portal-network
+          # Pull the latest image which contains network webservice and the built assets from EBI's dockerhub
+          image: dockerhub.ebi.ac.uk/intact-ci/intact-portal-network:latest
+          ports:
+            # We are using interaction webservice config which serves on port 8084
+            - containerPort: 8084
+          envFrom:
+            - configMapRef:
+                name: intact-config
+      imagePullSecrets:
+        # Provided by GitLab, this allows K8s to connect to dockerhub.ebi.ac.uk
+        - name: gitlab-registry
