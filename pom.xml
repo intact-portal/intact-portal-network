@@ -24,8 +24,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <intact.search.interactions.version>1.1.1</intact.search.interactions.version>
         <intact.style.version>1.0.2</intact.style.version>
-
         <style.full.index>true</style.full.index>
+        <finalName>${project.artifactId}-${project.version}</finalName>
     </properties>
 
     <profiles>
@@ -49,6 +49,7 @@
     </scm>
 
     <build>
+        <finalName>${finalName}</finalName>
         <plugins>
             <plugin>
                 <groupId>external.atlassian.jgitflow</groupId>

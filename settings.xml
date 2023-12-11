@@ -12,6 +12,7 @@
             <properties>
                 <solr.server>http://solr-service:8983/solr</solr.server>
                 <style-full-index>true</style-full-index>
+                <finalName>${project.artifactId}</finalName>
             </properties>
         </profile>
     </profiles>
