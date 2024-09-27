@@ -3,91 +3,54 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>uk.ac.ebi.intact.search</groupId>
-    <artifactId>intact-search-graph</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <groupId>uk.ac.ebi.intact.network</groupId>
+    <artifactId>intact-network-module</artifactId>
+    <version>1.0.2</version>
+    <packaging>pom</packaging>
 
-    <name>intact-search-graph</name>
-    <description>SpringBoot with spring data interactor solr</description>
+    <name>IntAct Portal :: Network Visualization Module</name>
+    <description>Module to feed data for the IntAct Network Visualization Component</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.2.RELEASE</version>
+        <version>2.1.0.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <properties>
+        <java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
-        <intact.search.interactions.version>1.0.0-GRAPH-SNAPSHOT</intact.search.interactions.version>
-        <intact.search.interactor.version>0.0.2-GRAPH-SNAPSHOT</intact.search.interactor.version>
+        <intact.search.interactions.version>1.1.1</intact.search.interactions.version>
+        <intact.style.version>1.0.2</intact.style.version>
+        <style.full.index>true</style.full.index>
+        <finalName>${project.artifactId}-${project.version}</finalName>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>debug</id>
+            <properties>
+                <style.full.index>false</style.full.index>
+            </properties>
+        </profile>
+    </profiles>
+
+    <modules>
+        <module>intact-network-ws</module>
+    </modules>
+
     <scm>
-        <connection>scm:git:https://github.com/EBI-IntAct/intact-search-graph.git</connection>
-        <developerConnection>scm:git:https://github.com/EBI-IntAct/intact-search-graph.git</developerConnection>
-        <url>https://github.com/EBI-IntAct/intact-search-graph</url>
+        <connection>scm:git:https://github.com/intact-portal/intact-portal-network.git</connection>
+        <developerConnection>scm:git:https://github.com/intact-portal/intact-portal-network.git</developerConnection>
+        <url>https://github.com/intact-portal/intact-portal-network</url>
         <tag>HEAD</tag>
     </scm>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-solr</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <!--Micro Web Services-->
-
-        <dependency>
-            <groupId>uk.ac.ebi.intact.search</groupId>
-            <artifactId>intact-search-interactions</artifactId>
-            <version>${intact.search.interactions.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>uk.ac.ebi.intact.search</groupId>
-            <artifactId>intact-search-interactors</artifactId>
-            <version>${intact.search.interactor.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-    </dependencies>
-
     <build>
+        <finalName>${finalName}</finalName>
         <plugins>
-            <!--<plugin>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-maven-plugin</artifactId>-->
-            <!--</plugin>-->
             <plugin>
                 <groupId>external.atlassian.jgitflow</groupId>
                 <artifactId>jgitflow-maven-plugin</artifactId>
@@ -118,12 +81,16 @@
 
     <repositories>
         <repository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+        <repository>
             <id>nexus-ebi-release-repo</id>
-            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
+            <url>https://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
         </repository>
         <repository>
             <id>nexus-ebi-snapshot-repo</id>
-            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-snapshots/</url>
+            <url>https://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-snapshots/</url>
         </repository>
     </repositories>
 
@@ -132,14 +99,14 @@
         <repository>
             <id>pst-release</id>
             <name>EBI Nexus Repository</name>
-            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-release</url>
+            <url>https://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-release</url>
         </repository>
         <!-- EBI SNAPSHOT repo -->
         <snapshotRepository>
             <uniqueVersion>false</uniqueVersion>
             <id>pst-snapshots</id>
             <name>EBI Nexus Snapshots Repository</name>
-            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-snapshots</url>
+            <url>https://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 

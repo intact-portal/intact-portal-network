@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <!-- =========================================================== -->
+    <!--            EBI PUB with thin oracle driver (local machines) -->
+    <!-- =========================================================== -->
+    <profiles>
+        <profile>
+            <id>ip-solr-indexing-hx</id>
+            <properties>
+                <solr.server>http://solr-service:8983/solr</solr.server>
+                <style-full-index>true</style-full-index>
+                <finalName>${project.artifactId}</finalName>
+            </properties>
+        </profile>
+    </profiles>
+</settings>
